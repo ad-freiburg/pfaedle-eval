@@ -1,0 +1,106 @@
+\documentclass[a4paper,12pt,twoside]{book}
+\usepackage[utf8]{inputenc}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[labelformat=simple,labelfont=bf]{caption}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\newcommand\todo[1]{\textcolor{blue}{[TODO: #1]}}
+\newcommand\TODO[1]{\textcolor{blue}{\small [TODO: #1]}}
+
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+\DeclareMathOperator*{\TED}{TED}
+\DeclareMathOperator*{\lev}{lev}
+\def\Hms{\makebox[1.6mm][l]{\hspace{0.2mm}\footnotesize ms}}
+\def\Hs{\makebox[1.6mm][l]{\hspace{0.2mm}\footnotesize s}}
+\def\Hk{\makebox[1.6mm][l]{\hspace{0.2mm}\footnotesize k}}
+\def\Hm{\makebox[1.6mm][l]{\hspace{0.2mm}\footnotesize m}}
+\def\HM{\makebox[1.6mm][l]{\hspace{0.2mm}\footnotesize M}}
+\def\Hh{\makebox[1.6mm][l]{\hspace{0.2mm}\footnotesize h}}
+\def\Hhline{\\[.7mm]\hline}
+
+\def\Hprom{\makebox[2.25mm][l]{\textperthousand}}
+\def\Hhline{\\[.7mm]\hline}
+\def\Hsci#1#2{$#1$\hspace{0.2mm}{\makebox[5.8mm][l]{\scriptsize$\times10^{#2}$}}}
+\def\Hdimh{rows\hspace{0.3mm}{\scriptsize$\times$}\hspace{0.3mm}cols}
+\def\Hdim#1#2{#1\hspace{0.1mm}{\scriptsize$\times$}\hspace{0.1mm}#2}
+\def\Htglpk{GLPK}
+\def\Htcbc{CBC}
+\def\Htgo{GU}
+\def\Hlong{---\phantom{\Hs}}
+\def\Hno{---}
+\def\Hgr{$>$}
+
+\def\bILP{b-ILP}
+\def\bILPs{b-ILP$^*$}
+\def\bILPst{b-ILP\makebox[0mm][l]{$^*$}}
+
+\def\iILP{i-ILP}
+\def\iILPs{i-ILP$^*$}
+\def\iILPst{i-ILP\makebox[0mm][l]{$^*$}}
+
+\def\EXH{Exh}
+\def\GREEDY{Gr}
+\def\GREEDYLA{GrLa}
+\def\HIL{Hill}
+\def\ANN{A\kern-0.05em n\kern-0.05em n}
+\def\HILGR{GrLa+Hill}
+\def\ANNGR{GrLa+A\kern-0.05em n\kern-0.05em n}
+
+\def\EXHs{\EXH$^*$}
+\def\HILs{\HIL$^*$}
+\def\ANNs{\ANN$^*$}
+
+\def\GREEDYs{\GREEDY$^*$}
+\def\GREEDYLAs{\GREEDYLA$^*$}
+\def\HILGRs{\HILGR$^*$}
+\def\ANNGRs{\ANNGR$^*$}
+
+% For use in the TABLE (s = with star, f = footnotesize)
+\def\legend{$\mathrm{method\atop graph}$}
+\def\method{{\footnotesize method}}
+\def\graph{{\footnotesize graph}}
+
+\def\bILPf{{\footnotesize \bILP}}
+\def\bILPsf{{\footnotesize \bILP\makebox[0mm][l]{$^*$}}}
+\def\iILPsf{{\footnotesize \iILP\makebox[0mm][l]{$^*$}}}
+\def\EXHf{{\footnotesize \EXH}}
+\def\HILf{{\footnotesize \HIL}}
+\def\ANNf{{\footnotesize \ANN}}
+\def\EXHsf{{\footnotesize \EXH\makebox[0mm][l]{$^*$}}}
+\def\HILsf{{\footnotesize \HIL\makebox[0mm][l]{$^*$}}}
+\def\ANNsf{{\footnotesize \ANN\makebox[0mm][l]{$^*$}}}
+\def\GREEDYsf{{\footnotesize \GREEDY\makebox[0mm][l]{$^*$}}}
+\def\GREEDYLAsf{{\footnotesize \GREEDYLA\makebox[0mm][l]{$^*$}}}
+\def\HILGRsf{{\footnotesize \begin{tabular}{@{}c@{}}GrLa+\\[-4pt]Hill\makebox[0mm][l]{$^*$}\end{tabular}}}
+\def\ANNGRsf{{\footnotesize \begin{tabular}{@{}c@{}}GrLa+\\[-4pt]Ann\makebox[0mm][l]{$^*$}\end{tabular}}}
+
+\def\basic{{\footnotesize raw}}
+\def\pruned{{\footnotesize pr/cut}}
+\def\untang{{\footnotesize untang}}
+\def\untangbf{\textbf{\footnotesize untang}}
+\def\ILPS{\multicolumn{2}{r}{\footnotesize ILP\makebox[0mm][l]{$^*$}}}
+\def\untangS{\multicolumn{2}{r}{\footnotesize untang}}
+% For use in a TABLE (align before *)
+\def\EXHst{\EXH\makebox[0mm][l]{$^*$}}
+\def\HILst{\HIL\makebox[0mm][l]{$^*$}}
+\def\ANNst{\ANN\makebox[0mm][l]{$^*$}}
+
+\def\GREEDYst{\GREEDY\makebox[0mm][l]{$^*$}}
+\def\GREEDYLAst{\GREEDYLA\makebox[0mm][l]{$^*$}}
+\def\HILGRst{\HILGR\makebox[0mm][l]{$^*$}}
+\def\ANNGRst{\ANNGR\makebox[0mm][l]{$^*$}}
+
+\def\tord{\footnotesize time}
+\def\objective{\footnotesize quality}
+\def\cor{$\times$}
+\def\sep{$\|$}
+
+\begin{document}
