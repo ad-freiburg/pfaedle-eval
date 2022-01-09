@@ -11,11 +11,23 @@ import os
 import math
 
 DATASET_LABELS = {
-    "zurich": "Zurich"
+    "zurich": "Zurich",
+    "vitoria-gasteiz": "Vit.-Gast.",
+    "vrs": "Rhein-Sieg",
+    "sydney": "Sydney",
+    "paris": "Paris",
+    "switzerland": "Switzerland",
+    "germany": "Germany",
 }
 
 DATASET_LABELS_SHORT = {
-    "zurich": "ZH"
+    "zurich": "ZH",
+    "vitoria-gasteiz": "VG",
+    "vrs": "VRS",
+    "sydney": "SY",
+    "paris": "P",
+    "switzerland": "CH",
+    "germany": "DE",
 }
 
 
@@ -96,6 +108,11 @@ def format_float(n):
         return "---"
     return "%.1f" % n
 
+def format_perc(n):
+    if n is None:
+        return "---"
+    return "%.1f\\%%" % n
+
 
 def format_secs(s):
     return format_msecs(s * 1000)
@@ -118,9 +135,9 @@ def format_msecs(ms):
         return "%.1f\\Hs" % (ms / 1000.0)
 
     if ms < 1000 * 60 * 60:
-        return "%.0f\\Hm" % (ms / (60 * 1000.0))
+        return "%.1f\\Hm" % (ms / (60 * 1000.0))
 
-    return "%.0f\\Hh" % (ms / (60 * 60 * 1000.0))
+    return "%.1f\\Hh" % (ms / (60 * 60 * 1000.0))
 
 
 def format_approxerr(perfect, approx):
@@ -133,10 +150,10 @@ def format_approxerr(perfect, approx):
 def tbl_overview(results):
     ret = "\\begin{table}\n"
     ret += "  \\centering\n"
-    ret += "  \\caption[]{Dimensions of our testing datasets. Under \emph{stations} we give the total number of stations contained in the GTFS feed. Under \emph{trips} we give the total number of contained trips. Under \emph{unique trips} we give the number of trips that only differ in their attributes (MOT, line name) and their station course, but not in the time offset at the first station or the service date. Under \emph{shapes} we denote whether ground truth shape data was available. The total number of edges over all transportation network graphs for all MOTs is given under $|E|$.\label{TBL:pfaedle:datasets}\n"
+    ret += "  \\caption[]{Dimensions of our testing datasets. Under \emph{stations} we give the total number of stations contained in the GTFS feed. Under \emph{trips} we give the total number of contained trips. Under \emph{unique trips} we give the number of trips that only differ in their attributes (MOT, line name) and their station course, but not in the time offset at the first station or the service date. Under \emph{tries} we give the number of trip tries (unique trips sharing common station course prefixes). Under \emph{shapes} we denote whether ground truth shape data was available. The total number of edges over all transportation network graphs for all MOTs is given under $|E|$.\label{TBL:pfaedle:datasets}}\n"
     ret += "    {\\renewcommand{\\baselinestretch}{1.13}\\normalsize\\setlength\\tabcolsep{3pt}\n"
 
-    ret += "  \\begin{tabular*}{0.8\\textwidth}{@{\\extracolsep{\\fill}} l r r r c r} \\toprule\n       & stations & trips & unique trips & shapes & $|E|$\\\\\\midrule\n"
+    ret += "  \\begin{tabular*}{\\textwidth}{@{\\extracolsep{\\fill}} l r r r r c r} \\toprule\n       & stations & trips & unique trips & tries & shapes & $|E|$\\\\\\midrule\n"
 
     sort = []
     for dataset_id in results:
@@ -147,10 +164,11 @@ def tbl_overview(results):
 
     for dataset_id in sort:
         r = results[dataset_id]
-        ret += "    %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS[dataset_id] + " (" + DATASET_LABELS_SHORT[dataset_id] + ")",
+        ret += "    %s & %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS[dataset_id] + " (" + DATASET_LABELS_SHORT[dataset_id] + ")",
                                                                     format_int(r["trie-fasthops-star"]["gtfs_num_stations"]),
                                                                     format_int(r["trie-fasthops-star"]["gtfs_num_trips"]),
                                                                     format_int(r["trie-fasthops-star"]["num_trie_leafs"]),
+                                                                    format_int(r["trie-fasthops-star"]["num_tries"]),
                                                                     "$\\bullet$" if r["trie-fasthops-star"]["gtfs_has_shapes"] else "",
                                                                     format_int(r["trie-fasthops-star"]["num_edges_tot"]))
 
@@ -160,6 +178,44 @@ def tbl_overview(results):
 
     return ret
 
+def tbl_main_res(results):
+    ret = "\\begin{table}\n"
+    ret += "  \\centering\n"
+    ret += "  \\caption[]{}\n"
+    ret += "    {\\renewcommand{\\baselinestretch}{1.13}\\normalsize\\setlength\\tabcolsep{5pt}\n"
+
+    ret += "\\begin{tabular*}{\\textwidth}{@{\extracolsep{\\fill}} l r r r r r r r}\n"
+    ret += " && \\footnotesize{G-STS} & \\footnotesize{DIST-RATIO} & \\footnotesize{OURS} & \\footnotesize{OURS+SM} & \\footnotesize{OURS+LM} & \\footnotesize{OURS+SM+LM}\\\\\\toprule\n"
+
+    sort = []
+    for dataset_id in results:
+        sort.append(dataset_id)
+
+    # G-STS (no distance penalty at all)
+    # dist-ratio
+    # ours-raw
+    # ours-station-match
+    # ours-station-line-match
+
+    #  sort = sorted(
+        #  sort, key=lambda d: results[d]["g-sts"]["gtfs_num_trips"])
+
+    for dataset_id in sort:
+        r = results[dataset_id]
+        ret += "%s && %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
+                            format_perc(get(r, "gsts", "an-10")),
+                            format_perc(get(r, "dist-ratio", "an-10")),
+                            format_perc(get(r, "ours", "an-10")),
+                            format_perc(get(r, "ours-sm", "an-10")),
+                            format_perc(get(r, "ours-lm", "an-10")),
+                            format_perc(get(r, "ours-sm-lm", "an-10")),
+                            )
+
+    ret += "\\bottomrule"
+    ret += "\\end{tabular*}}\n"
+    ret += "\\end{table}\n"
+
+    return ret
 
 def tbl_main_res_time(results):
     ret = "\\begin{table}\n"
@@ -217,6 +273,10 @@ def main():
 
     if sys.argv[1] == "time":
         print(tbl_main_res_time(results))
+
+    if sys.argv[1] == "mainres":
+        print(tbl_main_res(results))
+
 
 if __name__ == "__main__":
     main()

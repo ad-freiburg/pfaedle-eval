@@ -15,6 +15,8 @@ _output=out
 _method=emission-progr-ours
 _force=""
 
+_lambda_trans=0.0083
+
 # for debugging, display each command
 #set -x
 
@@ -80,7 +82,6 @@ mkdir -p $_output
 
 if [ $_method == "emission-progr-ours" ]; then
 	# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 8192 meters
-	lambda_trans=0.0083
 	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
 	do
 		lambda_em=$(echo "scale=5; 1 / $i" | bc)
@@ -95,7 +96,7 @@ if [ $_method == "emission-progr-ours" ]; then
 				fi
 			fi
 			echo " +++ Testing mean=$i with standard dev $stddev +++"
-			/home/patrick/repos/pfaedle/build/pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty:$lambda_trans" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:10" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:yes" -o $out_dir
+			/home/patrick/repos/pfaedle/build/pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -m bus -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:10" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:yes" -o $out_dir
 		done
 	done
 fi
