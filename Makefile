@@ -42,6 +42,12 @@ OURS-SM-LM := $(patsubst %, $(RESULTS_DIR)/%/ours-sm-lm/stats.json, $(GROUND_TRU
 
 .SECONDEXPANSION:
 
+$(GTFS_DIR):
+	mkdir gtfs
+
+$(OSM_DIR):
+	mkdir gtfs
+
 osmconvert:
 	@echo `date +"[%F %T.%3N]"` "EVAL : Fetching osmconvert..."
 	@curl -L http://m.m.i24.cc/osmconvert.c | cc -x c - -lz -O3 -o osmconvert
@@ -175,7 +181,7 @@ $(GTFS_DIR)/ex/%: $(GTFS_DIR)/%.zip
 	@mkdir -p $@
 	@unzip -qo $< -d $@
 
-$(OSM_DIR)/australia-latest.osm.pbf:
+$(OSM_DIR)/australia-latest.osm.pbf: $(OSM_DIR)
 	@mkdir -p osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading OSM data for Australia..."
 	@curl -L --progress-bar $(OSM_URL) > $@
@@ -188,7 +194,7 @@ $(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
 
-$(OSM_DIR)/europe-latest.osm.pbf:
+$(OSM_DIR)/europe-latest.osm.pbf: $(OSM_DIR)
 	@mkdir -p osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading OSM data for Europe..."
 	@curl -L --progress-bar $(OSM_URL) > $@
@@ -201,28 +207,28 @@ $(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
 
-$(GTFS_DIR)/zurich.zip:
+$(GTFS_DIR)/zurich.zip: $(GTFS_DIR)
 	@curl -L --progress-bar https://data.stadt-zuerich.ch/dataset/vbz_fahrplandaten_gtfs/download/2022_google_transit.zip > $@
 
-$(GTFS_DIR)/vitoria-gasteiz.zip:
+$(GTFS_DIR)/vitoria-gasteiz.zip: $(GTFS_DIR)
 	@curl -L --progress-bar http://www.vitoria-gasteiz.org/we001/http/vgTransit/google_transit.zip > $@
 
-$(GTFS_DIR)/vrs.zip:
+$(GTFS_DIR)/vrs.zip: $(GTFS_DIR)
 	@curl -L --progress-bar https://download.vrsinfo.de/gtfs/google_transit.zip > $@
 
-$(GTFS_DIR)/paris.zip:
+$(GTFS_DIR)/paris.zip: $(GTFS_DIR)
 	@curl -L --progress-bar https://data.iledefrance-mobilites.fr/explore/dataset/offre-horaires-tc-gtfs-idfm/files/a925e164271e4bca93433756d6a340d1/download/ > $@
 
-$(GTFS_DIR)/switzerland.zip:
+$(GTFS_DIR)/switzerland.zip: $(GTFS_DIR)
 	@curl -L --progress-bar https://gtfs.geops.de/dl/gtfs_complete.zip > $@
 
-$(GTFS_DIR)/germany.zip:
+$(GTFS_DIR)/germany.zip: $(GTFS_DIR)
 	@echo *******************************************
 	@echo Please register and download latest GTFS version from https://www.opendata-oepnv.de/ht/de/organisation/delfi/startseite?tx_vrrkit_view%5Bdataset_name%5D=deutschlandweite-sollfahrplandaten-gtfs&tx_vrrkit_view%5Bdataset_formats%5D%5B0%5D=ZIP&tx_vrrkit_view%5Baction%5D=details&tx_vrrkit_view%5Bcontroller%5D=View to $@
 	@echo *******************************************
 	@exit 1
 
-$(GTFS_DIR)/sydney.zip:
+$(GTFS_DIR)/sydney.zip: $(GTFS_DIR)
 	@echo *******************************************
 	@echo Please register and download latest GTFS version from https://opendata.transport.nsw.gov.au/dataset/timetables-complete-gtfs/resource/67974f14-01bf-47b7-bfa5-c7f2f8a950ca to $@
 	@echo *******************************************
@@ -233,13 +239,17 @@ $(PLOTS_DIR)/%/emission-progr-ours: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
 	@./script/eval.sh -m emission-progr-ours -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
 
-$(PLOTS_DIR)/%.tsv: $(PLOTS_DIR)/% $(GTFS_DIR)/ex/$$(firstword $$(subst /, ,%))
+$(PLOTS_DIR)/%.tsv: #$(PLOTS_DIR)/% $(GTFS_DIR)/ex/$$(firstword $$(subst /, ,%))
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@$(SHAPEVL) -g $(GTFS_DIR)/ex/$(firstword $(subst /, ,$*)) -s $</*/* | cut -d'/' -f 9,10 --output-delimiter ' ' | sort -n -k2 -k1 | cut -d':' -f1,2 --output-delimiter ',' | cut -d',' -f1,4 --output-delimiter ' ' | tr -s ' ' '\t' > $@
+	@$(SHAPEVL) -g $(GTFS_DIR)/ex/$(firstword $(subst /, ,$*)) -s $(PLOTS_DIR)/$*/*/* | cut -d'/' -f 9,10 --output-delimiter ' ' | sort -n -k2 -k1 | cut -d':' -f1,2 --output-delimiter ',' | cut -d',' -f1,4 --output-delimiter ' ' | tr -s ' ' '\t' > $@
+
+$(PLOTS_DIR)/%/transition-progr-dist-diff.tex: $(PLOTS_DIR)/%/transition-progr-dist-diff.tsv script/plot3d.p
+	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
+	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_t}$$'" script/plot3d.p
 
 $(PLOTS_DIR)/%.tex: $(PLOTS_DIR)/%.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
-	@gnuplot -e "infile='$<';outfile='$@'" script/plot3d.p
+	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_d}$$'" script/plot3d.p
 
 $(PLOTS_DIR)/%/transition-progr-dist-diff: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
