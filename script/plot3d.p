@@ -21,7 +21,6 @@ set dgrid3d 10,10,10
 set view 57,45
 
 set terminal postscript portrait enhanced color dashed lw 1 "DejaVuSans" 12
-#set terminal latex
 set output outfile.".ps"
 
 set multiplot
@@ -36,7 +35,7 @@ splot infile using 1:(log($2)/log(2)):3 with pm3d ls 5
 
 unset multiplot
 
-set terminal latex
+set term tikz standalone size 10cm, 10cm
 set output outfile
 
 set multiplot

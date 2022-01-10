@@ -185,11 +185,12 @@ def tbl_main_res(results):
     ret += "    {\\renewcommand{\\baselinestretch}{1.13}\\normalsize\\setlength\\tabcolsep{5pt}\n"
 
     ret += "\\begin{tabular*}{\\textwidth}{@{\extracolsep{\\fill}} l r r r r r r r}\n"
-    ret += " && \\footnotesize{G-STS} & \\footnotesize{DIST-RATIO} & \\footnotesize{OURS} & \\footnotesize{OURS+SM} & \\footnotesize{OURS+LM} & \\footnotesize{OURS+SM+LM}\\\\\\toprule\n"
+    ret += " && \\footnotesize{G-STS} & \\footnotesize{DIST-DIFF} & \\footnotesize{OURS} & \\footnotesize{OURS+SM} & \\footnotesize{OURS+LM} & \\footnotesize{OURS+SM+LM}\\\\\\toprule\n"
 
     sort = []
     for dataset_id in results:
-        sort.append(dataset_id)
+        if "gsts" in results[dataset_id]:
+            sort.append(dataset_id)
 
     # G-STS (no distance penalty at all)
     # dist-ratio
@@ -204,8 +205,8 @@ def tbl_main_res(results):
         r = results[dataset_id]
         ret += "%s && %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
                             format_perc(get(r, "gsts", "an-10")),
-                            format_perc(get(r, "dist-ratio", "an-10")),
-                            format_perc(get(r, "ours", "an-10")),
+                            format_perc(get(r, "dist-diff", "an-10")),
+                            format_perc(get(r, "ours-raw", "an-10")),
                             format_perc(get(r, "ours-sm", "an-10")),
                             format_perc(get(r, "ours-lm", "an-10")),
                             format_perc(get(r, "ours-sm-lm", "an-10")),

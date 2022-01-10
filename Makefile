@@ -5,8 +5,14 @@ CONFIG = eval.cfg
 RESULTS_DIR := results
 TABLES_DIR := tables
 PLOTS_DIR := plots
+GTFS_DIR := gtfs
+OSM_DIR := osm
+
+NOISE = 30
 
 DATASETS = vitoria-gasteiz zurich vrs sydney paris switzerland germany
+#GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich vrs sydney
+GROUND_TRUTH_DATASETS = vitoria-gasteiz
 
 #OSM_URL = http://download.geofabrik.de/europe-latest.osm.pbf
 OSM_URL = http://download.geofabrik.de/europe/spain-latest.osm.pbf
@@ -24,10 +30,15 @@ BASELINE_STAR := $(patsubst %, $(RESULTS_DIR)/%/baseline-star/stats.json, $(DATA
 BASELINE := $(patsubst %, $(RESULTS_DIR)/%/baseline/stats.json, $(DATASETS))
 
 # quality comp
-GSTS := $(patsubst %, $(RESULTS_DIR)/%/gsts/stats.json, $(DATASETS))
+GSTS := $(patsubst %, $(RESULTS_DIR)/%/gsts/stats.json, $(GROUND_TRUTH_DATASETS))
+#DIST-RATIO := $(patsubst %, $(RESULTS_DIR)/%/dist-ratio/stats.json, $(GROUND_TRUTH_DATASETS))
+DIST-DIFF := $(patsubst %, $(RESULTS_DIR)/%/dist-diff/stats.json, $(GROUND_TRUTH_DATASETS))
+OURS-RAW := $(patsubst %, $(RESULTS_DIR)/%/ours-raw/stats.json, $(GROUND_TRUTH_DATASETS))
+OURS-SM := $(patsubst %, $(RESULTS_DIR)/%/ours-sm/stats.json, $(GROUND_TRUTH_DATASETS))
+OURS-LM := $(patsubst %, $(RESULTS_DIR)/%/ours-lm/stats.json, $(GROUND_TRUTH_DATASETS))
+OURS-SM-LM := $(patsubst %, $(RESULTS_DIR)/%/ours-sm-lm/stats.json, $(GROUND_TRUTH_DATASETS))
 
-.PRECIOUS: osm/%.osm
-.PRECIOUS: plots/%.tsv
+.SECONDARY:
 
 .SECONDEXPANSION:
 
@@ -35,131 +46,204 @@ osmconvert:
 	@echo `date +"[%F %T.%3N]"` "EVAL : Fetching osmconvert..."
 	@curl -L http://m.m.i24.cc/osmconvert.c | cc -x c - -lz -O3 -o osmconvert
 
-$(RESULTS_DIR)/%/trie-fasthops/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/trie-fasthops/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/trie-fasthops-star/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/trie-fasthops-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/trie-cached/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/trie-cached/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star --no-fast-hops -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star --no-fast-hops -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/trie-cached-star/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/trie-cached-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/fasthops/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/fasthops/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star --no-trie -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/fasthops-star/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/fasthops-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs --no-trie -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/cached/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/cached/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-a-star --no-trie -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-a-star --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/cached-star/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/cached-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-trie -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/baseline/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/baseline/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-hop-cache --no-a-star --no-trie -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-hop-cache --no-a-star --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/baseline-star/stats.json: gtfs/ex/% osm/%.osm
+$(RESULTS_DIR)/%/baseline-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
-	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-hop-cache --no-trie -c $(CONFIG) -x osm/$*.osm -m all -D --stats -d $(dir $@) gtfs/ex/$*
+	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-hop-cache --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/gsts/stats.json: gtfs/ex/% osm/%.osm
-	@mkdir -p $(dir $@)
+$(RESULTS_DIR)/%/dist-diff/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+	@mkdir -p $(dir $@)/gtfs
+	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (DIST-DIFF) for $@..."
+
+	@# averaging because of gaussian noise
+	@# lambda_em=1/4.07=0.2457 from original microsoft paper
+	@# lambda_em=1/30=0.03 using the standard deviation of the noise we use
+	@# lambda_t=1/28 ? from microsoft paper estimator, based on median distdiff in vitoria-gasteiz TODO: take average median over all test datasets
+	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_emission_method:norm" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0.2457" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_method:distdiff" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:0.0357" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:no" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
+	done
+
+	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
+
+$(RESULTS_DIR)/%/gsts/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+	@mkdir -p $(dir $@)/gtfs
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (G-STS) for $@..."
 
-	$(PFAEDLE) -o $(dir $@)/gtfs -c $(CONFIG) -x osm/$*.osm -m all  --gaussian-noise 30 -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:yes" -D -d $(dir $@) gtfs/ex/$*
+	@# averaging because of gaussian noise
+	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
+	done
 
-	$(SHAPEVL) -g $< --json $(dir $@)/gtfs > $@
+	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
 
-gtfs/ex/%: gtfs/%.zip
+$(RESULTS_DIR)/%/ours-raw/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+	@mkdir -p $(dir $@)/gtfs
+	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
+
+	@# averaging because of gaussian noise
+	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
+	done
+
+	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
+
+$(RESULTS_DIR)/%/ours-sm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+	@mkdir -p $(dir $@)/gtfs
+	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-SM) for $@..."
+
+	@# averaging because of gaussian noise
+	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
+	done
+
+	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
+
+$(RESULTS_DIR)/%/ours-lm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+	@mkdir -p $(dir $@)/gtfs
+	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
+
+	@# averaging because of gaussian noise
+	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
+	done
+
+	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
+
+$(RESULTS_DIR)/%/ours-sm-lm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+	@mkdir -p $(dir $@)/gtfs
+	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
+
+	@# averaging because of gaussian noise
+	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
+	done
+
+	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
+
+$(GTFS_DIR)/ex/%: $(GTFS_DIR)/%.zip
 	@mkdir -p $@
 	@unzip -qo $< -d $@
 
-osm/australia-latest.osm.pbf:
+$(OSM_DIR)/australia-latest.osm.pbf:
 	@mkdir -p osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading OSM data for Australia..."
 	@curl -L --progress-bar $(OSM_URL) > $@
 
-osm/australia-latest.osm: osm/australia-latest.osm.pbf
+$(OSM_DIR)/australia-latest.osm: $(OSM_DIR)/australia-latest.osm.pbf
 	@echo `date +"[%F %T.%3N]"` "EVAL : Converting OSM data from .pbf to .osm"
 	@osmconvert --drop-version --drop-author $< > $@
 
-osm/sydney.osm: osm/australia-latest.osm
+$(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
-	@$(PFAEDLE) -x $< -i gtfs/ex/$* -c $(CONFIG) -m all -X $@
+	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
 
-osm/europe-latest.osm.pbf:
+$(OSM_DIR)/europe-latest.osm.pbf:
 	@mkdir -p osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading OSM data for Europe..."
 	@curl -L --progress-bar $(OSM_URL) > $@
 
-osm/europe-latest.osm: osm/europe-latest.osm.pbf
+$(OSM_DIR)/europe-latest.osm: $(OSM_DIR)/europe-latest.osm.pbf
 	@echo `date +"[%F %T.%3N]"` "EVAL : Converting OSM data from .pbf to .osm"
 	@osmconvert --drop-version --drop-author $< > $@
 
-osm/%.osm: osm/europe-latest.osm
+$(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
-	@$(PFAEDLE) -x $< -i gtfs/ex/$* -c $(CONFIG) -m all -X $@
+	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
 
-gtfs/zurich.zip:
+$(GTFS_DIR)/zurich.zip:
 	@curl -L --progress-bar https://data.stadt-zuerich.ch/dataset/vbz_fahrplandaten_gtfs/download/2022_google_transit.zip > $@
 
-gtfs/vitoria-gasteiz.zip:
+$(GTFS_DIR)/vitoria-gasteiz.zip:
 	@curl -L --progress-bar http://www.vitoria-gasteiz.org/we001/http/vgTransit/google_transit.zip > $@
 
-gtfs/vrs.zip:
+$(GTFS_DIR)/vrs.zip:
 	@curl -L --progress-bar https://download.vrsinfo.de/gtfs/google_transit.zip > $@
 
-gtfs/paris.zip:
+$(GTFS_DIR)/paris.zip:
 	@curl -L --progress-bar https://data.iledefrance-mobilites.fr/explore/dataset/offre-horaires-tc-gtfs-idfm/files/a925e164271e4bca93433756d6a340d1/download/ > $@
 
-gtfs/switzerland.zip:
+$(GTFS_DIR)/switzerland.zip:
 	@curl -L --progress-bar https://gtfs.geops.de/dl/gtfs_complete.zip > $@
 
-gtfs/germany.zip:
+$(GTFS_DIR)/germany.zip:
 	@echo *******************************************
 	@echo Please register and download latest GTFS version from https://www.opendata-oepnv.de/ht/de/organisation/delfi/startseite?tx_vrrkit_view%5Bdataset_name%5D=deutschlandweite-sollfahrplandaten-gtfs&tx_vrrkit_view%5Bdataset_formats%5D%5B0%5D=ZIP&tx_vrrkit_view%5Baction%5D=details&tx_vrrkit_view%5Bcontroller%5D=View to $@
 	@echo *******************************************
+	@exit 1
 
-gtfs/sydney.zip:
+$(GTFS_DIR)/sydney.zip:
 	@echo *******************************************
 	@echo Please register and download latest GTFS version from https://opendata.transport.nsw.gov.au/dataset/timetables-complete-gtfs/resource/67974f14-01bf-47b7-bfa5-c7f2f8a950ca to $@
 	@echo *******************************************
+	@exit 1
 
 ## plots
-$(PLOTS_DIR)/%/emission-progr-ours: script/eval.sh gtfs/ex/% osm/%.osm
-	@printf "[%s] Generating $@ ..." "$$(date -Is)"
-	@./script/eval.sh -m emission-progr-ours -x osm/$*.osm -c eval.cfg --output $@ gtfs/ex/$*
+$(PLOTS_DIR)/%/emission-progr-ours: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
+	@./script/eval.sh -m emission-progr-ours -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
 
-$(PLOTS_DIR)/%.tsv: $(PLOTS_DIR)/% gtfs/ex/$$(firstword $$(subst /, ,%))
-	@printf "[%s] Generating $@ ..." "$$(date -Is)"
-	$(SHAPEVL) -g gtfs/ex/$(firstword $(subst /, ,$*)) -s $</*/* | cut -d'/' -f 9,10 --output-delimiter ' ' | sort -n -k2 -k1 | cut -d':' -f1,2 --output-delimiter ',' | cut -d',' -f1,4 --output-delimiter ' ' | tr -s ' ' '\t' > $@
+$(PLOTS_DIR)/%.tsv: $(PLOTS_DIR)/% $(GTFS_DIR)/ex/$$(firstword $$(subst /, ,%))
+	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
+	@$(SHAPEVL) -g $(GTFS_DIR)/ex/$(firstword $(subst /, ,$*)) -s $</*/* | cut -d'/' -f 9,10 --output-delimiter ' ' | sort -n -k2 -k1 | cut -d':' -f1,2 --output-delimiter ',' | cut -d',' -f1,4 --output-delimiter ' ' | tr -s ' ' '\t' > $@
 
 $(PLOTS_DIR)/%.tex: $(PLOTS_DIR)/%.tsv script/plot3d.p
-	@printf "[%s] Generating plot $@ ..." "$$(date -Is)"
+	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@'" script/plot3d.p
+
+$(PLOTS_DIR)/%/transition-progr-dist-diff: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
+	@./script/eval.sh -m transition-progr-dist-diff -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
 
 ## tables
 $(TABLES_DIR)/tbl-overview.tex: script/table.py script/template.tex $(TRIE_FASTHOPS_STAR)
@@ -186,7 +270,7 @@ $(TABLES_DIR)/tbl-time.pdf: $(TABLES_DIR)/tbl-time.tex
 	@pdflatex -output-directory=$(TABLES_DIR) -jobname=tbl-time $(TABLES_DIR)/tmp > /dev/null
 	@rm $(TABLES_DIR)/tmp
 
-$(TABLES_DIR)/tbl-main-res.tex: script/table.py script/template.tex
+$(TABLES_DIR)/tbl-main-res.tex: script/table.py script/template.tex $(GSTS) $(OURS-RAW) $(OURS-SM) $(OURS-LM) $(OURS-SM-LM) $(DIST-DIFF)
 	@mkdir -p $(TABLES_DIR)
 	@python3 script/table.py mainres $(patsubst %, $(RESULTS_DIR)/%, $(DATASETS)) > $@
 
@@ -206,5 +290,7 @@ check:
 
 clean:
 	@rm -rf osm
-	@rm -rf gtfs/ex
+	@rm -rf $(GTFS_DIR)
 	@rm -rf $(RESULTS_DIR)
+	@rm -rf $(PLOTS_DIR)
+	@rm -rf $(OSM_DIR)
