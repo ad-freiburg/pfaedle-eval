@@ -26,8 +26,8 @@ set bmargin 0
 set view 57,45
 
 set size 1,1.09
-#set term tikz standalone size 10cm, 10cm
-set term tikz size 10cm, 10cm
+set term tikz standalone size 10cm, 10cm
+#set term tikz size 10cm, 10cm
 set output outfile
 
 set multiplot

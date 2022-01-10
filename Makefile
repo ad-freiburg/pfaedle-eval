@@ -15,7 +15,8 @@ DATASETS = vitoria-gasteiz zurich vrs sydney paris switzerland germany
 GROUND_TRUTH_DATASETS = vitoria-gasteiz
 
 #OSM_URL = http://download.geofabrik.de/europe-latest.osm.pbf
-OSM_URL = http://download.geofabrik.de/europe/spain-latest.osm.pbf
+#OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-latest.osm.pbf
+OSM_URL = http://download.geofabrik.de/europe/switzerland-latest.osm.pbf
 
 # time comp
 TRIE_FASTHOPS_STAR := $(patsubst %, $(RESULTS_DIR)/%/trie-fasthops-star/stats.json, $(DATASETS))
@@ -63,6 +64,7 @@ $(RESULTS_DIR)/%/trie-fasthops-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.os
 	@$(PFAEDLE) -o $(dir $@)/gtfs -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
 $(RESULTS_DIR)/%/trie-cached/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star --no-fast-hops -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
@@ -181,27 +183,23 @@ $(GTFS_DIR)/ex/%: $(GTFS_DIR)/%.zip
 	@mkdir -p $@
 	@unzip -qo $< -d $@
 
-$(OSM_DIR)/australia-latest.osm.pbf: $(OSM_DIR)
+$(OSM_DIR)/australia-latest.osm:
 	@mkdir -p osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading OSM data for Australia..."
-	@curl -L --progress-bar $(OSM_URL) > $@
-
-$(OSM_DIR)/australia-latest.osm: $(OSM_DIR)/australia-latest.osm.pbf
+	@curl -L --progress-bar $(OSM_URL_AUSTRALIA) > $@.pbf
 	@echo `date +"[%F %T.%3N]"` "EVAL : Converting OSM data from .pbf to .osm"
-	@osmconvert --drop-version --drop-author $< > $@
+	@osmconvert --drop-version --drop-author $@.osm > $@
 
 $(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
 
-$(OSM_DIR)/europe-latest.osm.pbf: $(OSM_DIR)
+$(OSM_DIR)/europe-latest.osm:
 	@mkdir -p osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading OSM data for Europe..."
-	@curl -L --progress-bar $(OSM_URL) > $@
-
-$(OSM_DIR)/europe-latest.osm: $(OSM_DIR)/europe-latest.osm.pbf
+	@curl -L --progress-bar $(OSM_URL) > $@.pbf
 	@echo `date +"[%F %T.%3N]"` "EVAL : Converting OSM data from .pbf to .osm"
-	@osmconvert --drop-version --drop-author $< > $@
+	@osmconvert --drop-version --drop-author $@.pbf > $@
 
 $(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
@@ -239,7 +237,12 @@ $(PLOTS_DIR)/%/emission-progr-ours: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
 	@./script/eval.sh -m emission-progr-ours -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
 
-$(PLOTS_DIR)/%.tsv: #$(PLOTS_DIR)/% $(GTFS_DIR)/ex/$$(firstword $$(subst /, ,%))
+$(PLOTS_DIR)/%/transition-progr-dist-diff: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
+	@./script/eval.sh -m transition-progr-dist-diff -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
+
+
+$(PLOTS_DIR)/%.tsv: $(PLOTS_DIR)/% $(GTFS_DIR)/ex/$$(firstword $$(subst /, ,%))
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
 	@$(SHAPEVL) -g $(GTFS_DIR)/ex/$(firstword $(subst /, ,$*)) -s $(PLOTS_DIR)/$*/*/* | cut -d'/' -f 9,10 --output-delimiter ' ' | sort -n -k2 -k1 | cut -d':' -f1,2 --output-delimiter ',' | cut -d',' -f1,4 --output-delimiter ' ' | tr -s ' ' '\t' > $@
 
@@ -250,10 +253,6 @@ $(PLOTS_DIR)/%/transition-progr-dist-diff.tex: $(PLOTS_DIR)/%/transition-progr-d
 $(PLOTS_DIR)/%.tex: $(PLOTS_DIR)/%.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_d}$$'" script/plot3d.p
-
-$(PLOTS_DIR)/%/transition-progr-dist-diff: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
-	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m transition-progr-dist-diff -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
 
 ## tables
 $(TABLES_DIR)/tbl-overview.tex: script/table.py script/template.tex $(TRIE_FASTHOPS_STAR)
