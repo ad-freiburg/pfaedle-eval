@@ -1,5 +1,5 @@
-PFAEDLE = /home/patrick/repos/pfaedle/build/pfaedle
-SHAPEVL = /home/patrick/repos/pfaedle/build/shapevl
+PFAEDLE = pfaedle
+SHAPEVL = shapevl
 CONFIG = eval.cfg
 
 RESULTS_DIR := results
@@ -15,7 +15,7 @@ GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich wien sydney
 #GROUND_TRUTH_DATASETS = vitoria-gasteiz
 
 OSM_URL = http://download.geofabrik.de/europe-latest.osm.pbf
-OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-oceania-latest.osm.pbf
+OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-oceania/australia-latest.osm.pbf
 #OSM_URL = http://download.geofabrik.de/europe/spain-latest.osm.pbf
 
 # time comp
@@ -180,23 +180,24 @@ $(GTFS_DIR)/ex/%: $(GTFS_DIR)/%.zip
 	@unzip -qo $< -d $@
 
 $(OSM_DIR)/filterrules:
-	@$(PFAEDLE) -c eval.cfg --osmfilter > $@
+	@mkdir -p $(OSM_DIR)
+	@$(PFAEDLE) -c $(CONFIG) --osmfilter > $@
 
 $(OSM_DIR)/australia-latest.osm: $(OSM_DIR)/filterrules
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Australia..."
-	@curl -sL $(OSM_URL) | osmconvert - --out-o5m --drop-version --drop-author | osmfilter > $@.o5m
-	@osmfilter --parameter-file $< $@.o5m -o $@
+	@curl -sL $(OSM_URL) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
+	@osmfilter --parameter-file=$< $@.o5m -o=$@
 
 $(OSM_DIR)/europe-latest.osm: $(OSM_DIR)/filterrules
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Europe..."
-	@curl -sL $(OSM_URL) | osmconvert - --out-o5m --drop-version --drop-author | osmfilter > $@.o5m
-	@osmfilter --parameter-file $< $@.o5m -o $@
+	@curl -sL $(OSM_URL) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
+	@osmfilter --parameter-file=$< $@.o5m -o=$@
 
-$(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm
-	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
-	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
+$(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm $(GTFS_DIR)/ex/sydney
+	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for sydney"
+	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/sydney -c $(CONFIG) -m all -X $@
 
 $(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
@@ -240,19 +241,19 @@ $(GTFS_DIR)/sydney.zip:
 ## plots
 $(PLOTS_DIR)/%/emission-progr-ours-raw: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m emission-progr-ours-raw -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
+	@./script/eval.sh -m emission-progr-ours-raw -x $(OSM_DIR)/$*.osm -c $(CONFIG) --output $@ $(GTFS_DIR)/ex/$*
 
 $(PLOTS_DIR)/%/emission-progr-ours-sm: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m emission-progr-ours-sm -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
+	@./script/eval.sh -m emission-progr-ours-sm -x $(OSM_DIR)/$*.osm -c $(CONFIG) --output $@ $(GTFS_DIR)/ex/$*
 
 $(PLOTS_DIR)/%/emission-progr-ours-sm-lm: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m emission-progr-ours-sm-lm -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
+	@./script/eval.sh -m emission-progr-ours-sm-lm -x $(OSM_DIR)/$*.osm -c $(CONFIG) --output $@ $(GTFS_DIR)/ex/$*
 
 $(PLOTS_DIR)/%/transition-progr-dist-diff: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m transition-progr-dist-diff -x $(OSM_DIR)/$*.osm -c eval.cfg --output $@ $(GTFS_DIR)/ex/$*
+	@./script/eval.sh -m transition-progr-dist-diff -x $(OSM_DIR)/$*.osm -c $(CONFIG) --output $@ $(GTFS_DIR)/ex/$*
 
 $(PLOTS_DIR)/%.tsv: $(PLOTS_DIR)/% $(GTFS_DIR)/ex/$$(firstword $$(subst /, ,%))
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
