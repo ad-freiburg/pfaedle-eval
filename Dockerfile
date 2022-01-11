@@ -32,7 +32,6 @@ RUN mkdir -p /output
 COPY Makefile /
 COPY README.md /
 ADD script /script
-ADD datasets /datasets
 
 RUN make help
 
