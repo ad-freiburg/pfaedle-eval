@@ -13,6 +13,7 @@ RUN apt-get update \
        make \
        cmake \
        unzip \
+	   libz-dev \
 	   gnuplot \
 	   texlive-base \
 	   texlive-science \
