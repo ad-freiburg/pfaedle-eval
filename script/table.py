@@ -139,13 +139,10 @@ def format_msecs(ms):
 
     return "%.1f\\Hh" % (ms / (60 * 60 * 1000.0))
 
-
-def format_approxerr(perfect, approx):
-    if perfect is None or approx is None:
-        return "---"
-
-    return "%.1f" % ((approx - perfect) / perfect)
-
+def bold_if(s, t):
+    if not t:
+        return s
+    return "\\textbf{" + s + "}"
 
 def tbl_overview(results):
     ret = "\\begin{table}\n"
@@ -185,6 +182,8 @@ def tbl_main_res(results):
     ret += "    {\\renewcommand{\\baselinestretch}{1.13}\\normalsize\\setlength\\tabcolsep{5pt}\n"
 
     ret += "\\begin{tabular*}{\\textwidth}{@{\extracolsep{\\fill}} l r r r r r r r}\n"
+    #  ret += "    && & \\multicolumn{5}{c}{\\footnotesize HMM} \\\\\n"
+    #  ret += "  \\cline{4-8} \\\\[-2ex] \\toprule\n"
     ret += " && \\footnotesize{G-STS} & \\footnotesize{DIST-DIFF} & \\footnotesize{OURS} & \\footnotesize{OURS+SM} & \\footnotesize{OURS+LM} & \\footnotesize{OURS+SM+LM}\\\\\\toprule\n"
 
     sort = []
@@ -193,17 +192,19 @@ def tbl_main_res(results):
             sort.append(dataset_id)
 
     sort = sorted(
-        sort, key=lambda d: results[d]["g-sts"]["num-trips"])
+        sort, key=lambda d: results[d]["gsts"]["num-trips"])
 
     for dataset_id in sort:
         r = results[dataset_id]
+        m = sorted([(get(r, m, "an-10"), m) for m in r], reverse=True)
+
         ret += "%s && %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
-                            format_perc(get(r, "gsts", "an-10")),
-                            format_perc(get(r, "dist-diff", "an-10")),
-                            format_perc(get(r, "ours-raw", "an-10")),
-                            format_perc(get(r, "ours-sm", "an-10")),
-                            format_perc(get(r, "ours-lm", "an-10")),
-                            format_perc(get(r, "ours-sm-lm", "an-10")),
+                            bold_if(format_perc(get(r, "gsts", "an-10")), "gsts" == m[0][1]),
+                            bold_if(format_perc(get(r, "dist-diff", "an-10")), "dist-diff" == m[0][1]),
+                            bold_if(format_perc(get(r, "ours-raw", "an-10")), "ours-raw" == m[0][1]),
+                            bold_if(format_perc(get(r, "ours-sm", "an-10")), "ours-sm" == m[0][1]),
+                            bold_if(format_perc(get(r, "ours-lm", "an-10")), "ours-lm" == m[0][1]),
+                            bold_if(format_perc(get(r, "ours-sm-lm", "an-10")), "ours-sm-lm" == m[0][1]),
                             )
 
     ret += "\\bottomrule"
@@ -215,7 +216,7 @@ def tbl_main_res(results):
 def tbl_main_res_max_frech(results):
     ret = "\\begin{table}\n"
     ret += "  \\centering\n"
-    ret += "  \\caption[]{Maximum Frechet dist}\n"
+    ret += "  \\caption[]{Maximum avg Frechet dist in meters}\n"
     ret += "    {\\renewcommand{\\baselinestretch}{1.13}\\normalsize\\setlength\\tabcolsep{5pt}\n"
 
     ret += "\\begin{tabular*}{\\textwidth}{@{\extracolsep{\\fill}} l r r r r r r r}\n"
@@ -227,17 +228,19 @@ def tbl_main_res_max_frech(results):
             sort.append(dataset_id)
 
     sort = sorted(
-        sort, key=lambda d: results[d]["g-sts"]["num-trips"])
+        sort, key=lambda d: results[d]["gsts"]["num-trips"])
 
     for dataset_id in sort:
         r = results[dataset_id]
+        m = sorted([(get(r, m, "max-avg-frech-dist"), m) for m in r])
+
         ret += "%s && %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
-                            format_perc(get(r, "gsts", "max-avg-frech-dist")),
-                            format_perc(get(r, "dist-diff", "max-avg-frech-dist")),
-                            format_perc(get(r, "ours-raw", "max-avg-frech-dist")),
-                            format_perc(get(r, "ours-sm", "max-avg-frech-dist")),
-                            format_perc(get(r, "ours-lm", "max-avg-frech-dist")),
-                            format_perc(get(r, "ours-sm-lm", "max-avg-frech-dist")),
+                            bold_if(format_float(get(r, "gsts", "max-avg-frech-dist")), m[0][1] == "gsts"),
+                            bold_if(format_float(get(r, "dist-diff", "max-avg-frech-dist")), m[0][1] == "dist-diff"),
+                            bold_if(format_float(get(r, "ours-raw", "max-avg-frech-dist")), m[0][1] == "ours-raw"),
+                            bold_if(format_float(get(r, "ours-sm", "max-avg-frech-dist")), m[0][1] == "ours-sm"),
+                            bold_if(format_float(get(r, "ours-lm", "max-avg-frech-dist")), m[0][1] == "ours-lm"),
+                            bold_if(format_float(get(r, "ours-sm-lm", "max-avg-frech-dist")), m[0][1] == "ours-sm-lm"),
                             )
 
     ret += "\\bottomrule"
