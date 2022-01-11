@@ -211,24 +211,30 @@ $(GTFS_DIR)/zurich.zip:
 
 $(GTFS_DIR)/vitoria-gasteiz.zip:
 	@#this is the last version with shape_dist_travelled
+	@mkdir -p $(GTFS_DIR)
 	@curl -L --progress-bar https://transitfeeds.com/p/tuvisa-euskotran/239/20211020/download > $@
 
 $(GTFS_DIR)/wien.zip:
+	@mkdir -p $(GTFS_DIR)
 	@curl -L --progress-bar http://www.wienerlinien.at/ogd_realtime/doku/ogd/gtfs/gtfs.zip > $@
 
 $(GTFS_DIR)/paris.zip:
+	@mkdir -p $(GTFS_DIR)
 	@curl -L --progress-bar https://data.iledefrance-mobilites.fr/explore/dataset/offre-horaires-tc-gtfs-idfm/files/a925e164271e4bca93433756d6a340d1/download/ > $@
 
 $(GTFS_DIR)/switzerland.zip:
+	@mkdir -p $(GTFS_DIR)
 	@curl -L --progress-bar https://gtfs.geops.de/dl/gtfs_complete.zip > $@
 
 $(GTFS_DIR)/germany.zip:
+	@mkdir -p $(GTFS_DIR)
 	@echo "*******************************************"
 	@echo Please register and download latest GTFS version from https://www.opendata-oepnv.de/ht/de/organisation/delfi/startseite?tx_vrrkit_view%5Bdataset_name%5D=deutschlandweite-sollfahrplandaten-gtfs&tx_vrrkit_view%5Bdataset_formats%5D%5B0%5D=ZIP&tx_vrrkit_view%5Baction%5D=details&tx_vrrkit_view%5Bcontroller%5D=View to $@
 	@echo "*******************************************"
 	@exit 1
 
 $(GTFS_DIR)/sydney.zip:
+	@mkdir -p $(GTFS_DIR)
 	@echo "*******************************************"
 	@echo Please register and download latest GTFS version from https://opendata.transport.nsw.gov.au/dataset/timetables-complete-gtfs/resource/67974f14-01bf-47b7-bfa5-c7f2f8a950ca to $@
 	@echo "*******************************************"
