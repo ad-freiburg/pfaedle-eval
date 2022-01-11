@@ -80,7 +80,7 @@ fi
 
 mkdir -p $_output
 
-if [ $_method == "emission-progr-ours" ]; then
+if [ $_method == "emission-progr-ours-raw" ]; then
 	# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 8192 meters
 	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
 	do
@@ -96,7 +96,49 @@ if [ $_method == "emission-progr-ours" ]; then
 				fi
 			fi
 			echo " +++ Testing mean=$i with standard dev $stddev +++"
-			/home/patrick/repos/pfaedle/build/pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:yes" -o $out_dir
+			/home/patrick/repos/pfaedle/build/pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
+		done
+	done
+fi
+
+if [ $_method == "emission-progr-ours-sm" ]; then
+	# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 8192 meters
+	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
+	do
+		lambda_em=$(echo "scale=5; 1 / $i" | bc)
+		for stddev in 0 10 20 30 40 50 60 70 80 90 100
+		do
+			out_dir=$_output/$stddev/$i
+			mkdir -p $out_dir
+			if test -f "$out_dir/shapes.txt"; then
+				if [ -z "$_force" ]; then
+					echo "  (Skipping existing $out_dir, use -f to overwrite)"
+					continue
+				fi
+			fi
+			echo " +++ Testing mean=$i with standard dev $stddev +++"
+			/home/patrick/repos/pfaedle/build/pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
+		done
+	done
+fi
+
+if [ $_method == "emission-progr-ours-sm-lm" ]; then
+	# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 8192 meters
+	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
+	do
+		lambda_em=$(echo "scale=5; 1 / $i" | bc)
+		for stddev in 0 10 20 30 40 50 60 70 80 90 100
+		do
+			out_dir=$_output/$stddev/$i
+			mkdir -p $out_dir
+			if test -f "$out_dir/shapes.txt"; then
+				if [ -z "$_force" ]; then
+					echo "  (Skipping existing $out_dir, use -f to overwrite)"
+					continue
+				fi
+			fi
+			echo " +++ Testing mean=$i with standard dev $stddev +++"
+			/home/patrick/repos/pfaedle/build/pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -o $out_dir
 		done
 	done
 fi

@@ -192,14 +192,8 @@ def tbl_main_res(results):
         if "gsts" in results[dataset_id]:
             sort.append(dataset_id)
 
-    # G-STS (no distance penalty at all)
-    # dist-ratio
-    # ours-raw
-    # ours-station-match
-    # ours-station-line-match
-
-    #  sort = sorted(
-        #  sort, key=lambda d: results[d]["g-sts"]["gtfs_num_trips"])
+    sort = sorted(
+        sort, key=lambda d: results[d]["g-sts"]["num-trips"])
 
     for dataset_id in sort:
         r = results[dataset_id]
@@ -210,6 +204,40 @@ def tbl_main_res(results):
                             format_perc(get(r, "ours-sm", "an-10")),
                             format_perc(get(r, "ours-lm", "an-10")),
                             format_perc(get(r, "ours-sm-lm", "an-10")),
+                            )
+
+    ret += "\\bottomrule"
+    ret += "\\end{tabular*}}\n"
+    ret += "\\end{table}\n"
+
+    return ret
+
+def tbl_main_res_max_frech(results):
+    ret = "\\begin{table}\n"
+    ret += "  \\centering\n"
+    ret += "  \\caption[]{Maximum Frechet dist}\n"
+    ret += "    {\\renewcommand{\\baselinestretch}{1.13}\\normalsize\\setlength\\tabcolsep{5pt}\n"
+
+    ret += "\\begin{tabular*}{\\textwidth}{@{\extracolsep{\\fill}} l r r r r r r r}\n"
+    ret += " && \\footnotesize{G-STS} & \\footnotesize{DIST-DIFF} & \\footnotesize{OURS} & \\footnotesize{OURS+SM} & \\footnotesize{OURS+LM} & \\footnotesize{OURS+SM+LM}\\\\\\toprule\n"
+
+    sort = []
+    for dataset_id in results:
+        if "gsts" in results[dataset_id]:
+            sort.append(dataset_id)
+
+    sort = sorted(
+        sort, key=lambda d: results[d]["g-sts"]["num-trips"])
+
+    for dataset_id in sort:
+        r = results[dataset_id]
+        ret += "%s && %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
+                            format_perc(get(r, "gsts", "max-avg-frech-dist")),
+                            format_perc(get(r, "dist-diff", "max-avg-frech-dist")),
+                            format_perc(get(r, "ours-raw", "max-avg-frech-dist")),
+                            format_perc(get(r, "ours-sm", "max-avg-frech-dist")),
+                            format_perc(get(r, "ours-lm", "max-avg-frech-dist")),
+                            format_perc(get(r, "ours-sm-lm", "max-avg-frech-dist")),
                             )
 
     ret += "\\bottomrule"
@@ -277,6 +305,9 @@ def main():
 
     if sys.argv[1] == "mainres":
         print(tbl_main_res(results))
+
+    if sys.argv[1] == "mainres-max-frech":
+        print(tbl_main_res_max_frech(results))
 
 
 if __name__ == "__main__":
