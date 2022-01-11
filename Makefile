@@ -15,7 +15,7 @@ GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich wien sydney
 #GROUND_TRUTH_DATASETS = vitoria-gasteiz
 
 OSM_URL = http://download.geofabrik.de/europe-latest.osm.pbf
-OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-latest.osm.pbf
+OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-oceania-latest.osm.pbf
 #OSM_URL = http://download.geofabrik.de/europe/spain-latest.osm.pbf
 
 # time comp
