@@ -12,6 +12,7 @@ RUN apt-get update \
        curl \
        make \
        cmake \
+       unzip \
 	   gnuplot \
 	   texlive-base \
 	   texlive-science \
