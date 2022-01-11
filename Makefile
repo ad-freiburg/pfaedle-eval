@@ -49,10 +49,6 @@ PLOTS-DIST-DIFF := $(patsubst %, $(PLOTS_DIR)/%/transition-progr-dist-diff, $(GR
 
 .SECONDEXPANSION:
 
-osmconvert:
-	@echo `date +"[%F %T.%3N]"` "EVAL : Fetching osmconvert..."
-	@curl -L http://m.m.i24.cc/osmconvert.c | cc -x c - -lz -O3 -o osmconvert
-
 $(RESULTS_DIR)/%/trie-fasthops/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
@@ -183,19 +179,19 @@ $(GTFS_DIR)/ex/%: $(GTFS_DIR)/%.zip
 	@mkdir -p $@
 	@unzip -qo $< -d $@
 
-$(OSM_DIR)/australia-latest.osm: osmconvert
+$(OSM_DIR)/australia-latest.osm:
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Australia..."
-	@curl -sL $(OSM_URL) | ./osmconvert - --drop-version --drop-author > $@
+	@curl -sL $(OSM_URL) | osmconvert - --drop-version --drop-author > $@
 
 $(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
 
-$(OSM_DIR)/europe-latest.osm: osmconvert
+$(OSM_DIR)/europe-latest.osm:
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Europe..."
-	@curl -sL $(OSM_URL) | ./osmconvert - --drop-version --drop-author > $@
+	@curl -sL $(OSM_URL) | osmconvert - --drop-version --drop-author > $@
 
 $(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"

@@ -13,13 +13,14 @@ RUN apt-get update \
        make \
        cmake \
        unzip \
-	   libz-dev \
-	   gnuplot \
-	   texlive-base \
-	   texlive-science \
-	   texlive-latex-extra \
-	   texlive-latex-base \
-	   g++ \
+       libz-dev \
+       gnuplot \
+       osmctools \
+       texlive-base \
+       texlive-science \
+       texlive-latex-extra \
+       texlive-latex-base \
+       g++ \
        git \
     && update-ca-certificates
 
