@@ -186,7 +186,7 @@ $(GTFS_DIR)/ex/%: $(GTFS_DIR)/%.zip
 $(OSM_DIR)/australia-latest.osm: osmconvert
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Australia..."
-	@curl -L --progress-bar $(OSM_URL) | osmconvert --drop-version --drop-author > $@
+	@curl -sL $(OSM_URL) | ./osmconvert - --drop-version --drop-author > $@
 
 $(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
@@ -195,7 +195,7 @@ $(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm
 $(OSM_DIR)/europe-latest.osm: osmconvert
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Europe..."
-	@curl -L --progress-bar $(OSM_URL) | osmconvert --drop-version --drop-author > $@
+	@curl -sL $(OSM_URL) | ./osmconvert - --drop-version --drop-author > $@
 
 $(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
