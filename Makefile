@@ -301,6 +301,9 @@ check:
 	@echo "osm dir:" $(OSM_DIR)
 	@echo "datasets:" $(DATASETS)
 
+help:
+	@cat README.md
+
 clean:
 	@rm -rf osm
 	@rm -rf $(GTFS_DIR)

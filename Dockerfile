@@ -34,6 +34,8 @@ COPY README.md /
 ADD script /script
 ADD datasets /datasets
 
+RUN make help
+
 WORKDIR /
 
 ENTRYPOINT ["make", "RESULTS_DIR=/output/results", "TABLES_DIR=/output/tables", "PLOTS_DIR=/output/plots", "GTFS_DIR=/output/gtfs", "OSM_DIR=/output/osm"]
