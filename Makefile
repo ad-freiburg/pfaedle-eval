@@ -186,7 +186,7 @@ $(OSM_DIR)/filterrules:
 $(OSM_DIR)/australia-latest.osm: $(OSM_DIR)/filterrules
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Australia..."
-	@curl -sL $(OSM_URL) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
+	@curl -sL $(OSM_URL_AUSTRALIA) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
 	@osmfilter --parameter-file=$< $@.o5m -o=$@
 
 $(OSM_DIR)/europe-latest.osm: $(OSM_DIR)/filterrules
