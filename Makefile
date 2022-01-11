@@ -183,23 +183,19 @@ $(GTFS_DIR)/ex/%: $(GTFS_DIR)/%.zip
 	@mkdir -p $@
 	@unzip -qo $< -d $@
 
-$(OSM_DIR)/australia-latest.osm:
+$(OSM_DIR)/australia-latest.osm: osmconvert
 	@mkdir -p $(OSM_DIR)
-	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading OSM data for Australia..."
-	@curl -L --progress-bar $(OSM_URL_AUSTRALIA) > $@.pbf
-	@echo `date +"[%F %T.%3N]"` "EVAL : Converting OSM data from .pbf to .osm"
-	@osmconvert --drop-version --drop-author $@.osm > $@
+	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Australia..."
+	@curl -L --progress-bar $(OSM_URL) | osmconvert --drop-version --drop-author > $@
 
 $(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
 
-$(OSM_DIR)/europe-latest.osm:
+$(OSM_DIR)/europe-latest.osm: osmconvert
 	@mkdir -p $(OSM_DIR)
-	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading OSM data for Europe..."
-	@curl -L --progress-bar $(OSM_URL) > $@.pbf
-	@echo `date +"[%F %T.%3N]"` "EVAL : Converting OSM data from .pbf to .osm"
-	@osmconvert --drop-version --drop-author $@.pbf > $@
+	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Europe..."
+	@curl -L --progress-bar $(OSM_URL) | osmconvert --drop-version --drop-author > $@
 
 $(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
