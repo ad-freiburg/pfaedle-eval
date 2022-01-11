@@ -179,19 +179,24 @@ $(GTFS_DIR)/ex/%: $(GTFS_DIR)/%.zip
 	@mkdir -p $@
 	@unzip -qo $< -d $@
 
-$(OSM_DIR)/australia-latest.osm:
+$(OSM_DIR)/filterrules:
+	@$(PFAEDLE) -c eval.cfg --osmfilter > $@
+
+$(OSM_DIR)/australia-latest.osm: $(OSM_DIR)/filterrules
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Australia..."
-	@curl -sL $(OSM_URL) | osmconvert - --drop-version --drop-author > $@
+	@curl -sL $(OSM_URL) | osmconvert - --out-o5m --drop-version --drop-author | osmfilter > $@.o5m
+	@osmfilter --parameter-file $< $@.o5m -o $@
+
+$(OSM_DIR)/europe-latest.osm: $(OSM_DIR)/filterrules
+	@mkdir -p $(OSM_DIR)
+	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Europe..."
+	@curl -sL $(OSM_URL) | osmconvert - --out-o5m --drop-version --drop-author | osmfilter > $@.o5m
+	@osmfilter --parameter-file $< $@.o5m -o $@
 
 $(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
-
-$(OSM_DIR)/europe-latest.osm:
-	@mkdir -p $(OSM_DIR)
-	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Europe..."
-	@curl -sL $(OSM_URL) | osmconvert - --drop-version --drop-author > $@
 
 $(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"

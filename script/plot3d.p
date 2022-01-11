@@ -13,7 +13,7 @@ set ylabel label
 
 set xlabel "$\\sigma$"
 
-set zlabel "$AN_{90}$"
+set zlabel "$A_N^{10}$"
 
 set pm3d interpolate 1,1
 set dgrid3d 10,10,10

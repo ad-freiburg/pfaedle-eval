@@ -34,6 +34,7 @@ RUN mkdir -p /output
 
 COPY Makefile /
 COPY README.md /
+COPY eval.cfg /
 ADD script /script
 
 WORKDIR /
