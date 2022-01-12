@@ -1,7 +1,7 @@
 set key noautotitle
 
-set zrange [0:100]
-set xyplane at -10
+set zrange [0:1]
+set xyplane at -0.05
 
 set xtics offset -0.5,-0.5
 set ytics offset 0.5,-0.5
@@ -15,7 +15,7 @@ set xlabel "$\\sigma$"
 
 set zlabel "$A_N^{10}$"
 
-set pm3d interpolate 1,1
+set pm3d interpolate 2,2
 set dgrid3d 10,10,10
 
 set lmargin 0
@@ -31,12 +31,12 @@ set output outfile
 
 set multiplot
 
-splot infile using 1:(log($2)):3 with pm3d
+splot infile using 1:(log($2)):($3/100) with pm3d
 
 set style line 5 lt rgb "#AA000000" lw 1
 set pm3d interpolate 2,2
 set pm3d depthorder hidden3d 1
 
-splot infile using 1:(log($2)):3 with pm3d ls 5
+splot infile using 1:(log($2)):($3/100) with pm3d ls 5
 
 unset multiplot

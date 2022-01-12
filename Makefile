@@ -10,12 +10,13 @@ OSM_DIR := osm
 
 NOISE = 30
 
-DATASETS = vitoria-gasteiz zurich wien sydney paris switzerland germany
-GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich wien sydney
+DATASETS = vitoria-gasteiz zurich seattle wien sydney paris switzerland germany
+GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich seattle wien sydney
 #GROUND_TRUTH_DATASETS = vitoria-gasteiz
 
 OSM_URL = http://download.geofabrik.de/europe-latest.osm.pbf
 OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-oceania/australia-latest.osm.pbf
+OSM_URL_WASHINGTON = http://download.geofabrik.de/north-america/us/washington-latest.osm.pbf
 #OSM_URL = http://download.geofabrik.de/europe/spain-latest.osm.pbf
 
 # time comp
@@ -189,6 +190,12 @@ $(OSM_DIR)/australia-latest.osm: $(OSM_DIR)/filterrules
 	@curl -sL $(OSM_URL_AUSTRALIA) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
 	@osmfilter --parameter-file=$< $@.o5m -o=$@
 
+$(OSM_DIR)/washington-latest.osm: $(OSM_DIR)/filterrules
+	@mkdir -p $(OSM_DIR)
+	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for US-Washington..."
+	@curl -sL $(OSM_URL_WASHINGTON) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
+	@osmfilter --parameter-file=$< $@.o5m -o=$@
+
 $(OSM_DIR)/europe-latest.osm: $(OSM_DIR)/filterrules
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Europe..."
@@ -198,6 +205,10 @@ $(OSM_DIR)/europe-latest.osm: $(OSM_DIR)/filterrules
 $(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm $(GTFS_DIR)/ex/sydney
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for sydney"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/sydney -c $(CONFIG) -m all -X $@
+
+$(OSM_DIR)/seattle.osm: $(OSM_DIR)/washington-latest.osm $(GTFS_DIR)/ex/seattle
+	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for seattle"
+	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/seattle -c $(CONFIG) -m all -X $@
 
 $(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
@@ -215,6 +226,10 @@ $(GTFS_DIR)/vitoria-gasteiz.zip:
 $(GTFS_DIR)/wien.zip:
 	@mkdir -p $(GTFS_DIR)
 	@curl -L --progress-bar http://www.wienerlinien.at/ogd_realtime/doku/ogd/gtfs/gtfs.zip > $@
+
+$(GTFS_DIR)/seattle.zip:
+	@mkdir -p $(GTFS_DIR)
+	@curl -L --progress-bar https://transitfeeds.com/p/king-county-metro/73/latest/download > $@
 
 $(GTFS_DIR)/paris.zip:
 	@mkdir -p $(GTFS_DIR)
