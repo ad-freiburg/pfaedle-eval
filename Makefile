@@ -282,7 +282,7 @@ $(PLOTS_DIR)/%/transition-progr-dist-diff.tex: $(PLOTS_DIR)/%/transition-progr-d
 $(PLOTS_DIR)/%.tex: $(PLOTS_DIR)/%.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_d}$$'" script/plot3d.p
-	@pdflatex -output-directory=$(PLOTS_DIR)/$* $@
+	@pdflatex -output-directory=$(PLOTS_DIR)/$*/.. $@
 
 ## tables
 $(TABLES_DIR)/%.pdf: $(TABLES_DIR)/%.tex
