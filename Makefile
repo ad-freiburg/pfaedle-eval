@@ -277,12 +277,12 @@ $(PLOTS_DIR)/%.tsv: $(PLOTS_DIR)/% $(GTFS_DIR)/ex/$$(firstword $$(subst /, ,%))
 $(PLOTS_DIR)/%/transition-progr-dist-diff.tex: $(PLOTS_DIR)/%/transition-progr-dist-diff.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_t}$$'" script/plot3d.p
-	@pdflatex $@
+	@pdflatex -output-directory=$(PLOTS_DIR)/$* $@
 
 $(PLOTS_DIR)/%.tex: $(PLOTS_DIR)/%.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_d}$$'" script/plot3d.p
-	@pdflatex $@
+	@pdflatex -output-directory=$(PLOTS_DIR)/$* $@
 
 ## tables
 $(TABLES_DIR)/%.pdf: $(TABLES_DIR)/%.tex
