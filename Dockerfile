@@ -13,6 +13,7 @@ RUN apt-get update \
        make \
        cmake \
        unzip \
+       bc \
        libz-dev \
        gnuplot \
        osmctools \

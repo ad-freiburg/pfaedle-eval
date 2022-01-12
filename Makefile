@@ -272,7 +272,7 @@ $(PLOTS_DIR)/%/transition-progr-dist-diff: script/eval.sh $(GTFS_DIR)/ex/% $(OSM
 
 $(PLOTS_DIR)/%.tsv: $(PLOTS_DIR)/% $(GTFS_DIR)/ex/$$(firstword $$(subst /, ,%))
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@$(SHAPEVL) -g $(GTFS_DIR)/ex/$(firstword $(subst /, ,$*)) -s $(PLOTS_DIR)/$*/*/* | cut -d'/' -f 9,10 --output-delimiter ' ' | sort -n -k2 -k1 | cut -d':' -f1,2 --output-delimiter ',' | cut -d',' -f1,4 --output-delimiter ' ' | tr -s ' ' '\t' > $@
+	@$(SHAPEVL) -g $(GTFS_DIR)/ex/$(firstword $(subst /, ,$*)) -s $(PLOTS_DIR)/$*/*/* | rev | cut -d'/' -f 1,2 --output-delimiter ' ' | rev | sort -n -k2 -k1 | cut -d':' -f1,2 --output-delimiter ',' | cut -d',' -f1,4 --output-delimiter ' ' | tr -s ' ' '\t' > $@
 
 $(PLOTS_DIR)/%/transition-progr-dist-diff.tex: $(PLOTS_DIR)/%/transition-progr-dist-diff.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
