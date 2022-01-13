@@ -81,86 +81,98 @@ fi
 mkdir -p $_output
 
 if [ $_method == "emission-progr-ours-raw" ]; then
-	# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 8192 meters
-	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
+	# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 4096 meters
+	for j in 1 2 3 4 5 6 7 8 9 10
 	do
-		lambda_em=$(echo "scale=5; 1 / $i" | bc)
-		for stddev in 0 10 20 30 40 50 60 70 80 90 100
+		for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
 		do
-			out_dir=$_output/$stddev/$i
-			mkdir -p $out_dir
-			if test -f "$out_dir/shapes.txt"; then
-				if [ -z "$_force" ]; then
-					echo "  (Skipping existing $out_dir, use -f to overwrite)"
-					continue
+			lambda_em=$(echo "scale=5; 1 / $i" | bc)
+			for stddev in 0 10 20 30 40 50 60 70 80 90 100 110 120 130
+			do
+				out_dir=$_output/run-$j/$stddev/$i
+				mkdir -p $out_dir
+				if test -f "$out_dir/shapes.txt"; then
+					if [ -z "$_force" ]; then
+						echo "  (Skipping existing $out_dir, use -f to overwrite)"
+						continue
+					fi
 				fi
-			fi
-			echo " +++ Testing mean=$i with standard dev $stddev +++"
-			pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
+				echo " +++ Testing mean=$i with standard dev $stddev +++"
+				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
+			done
 		done
 	done
 fi
 
 if [ $_method == "emission-progr-ours-sm" ]; then
-	# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 8192 meters
-	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
+	for j in 1 2 3 4 5 6 7 8 9 10
 	do
-		lambda_em=$(echo "scale=5; 1 / $i" | bc)
-		for stddev in 0 10 20 30 40 50 60 70 80 90 100
+		# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 4096 meters
+		for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
 		do
-			out_dir=$_output/$stddev/$i
-			mkdir -p $out_dir
-			if test -f "$out_dir/shapes.txt"; then
-				if [ -z "$_force" ]; then
-					echo "  (Skipping existing $out_dir, use -f to overwrite)"
-					continue
+			lambda_em=$(echo "scale=5; 1 / $i" | bc)
+			for stddev in 0 10 20 30 40 50 60 70 80 90 100 110 120 130
+			do
+				out_dir=$_output/run-$j/$stddev/$i
+				mkdir -p $out_dir
+				if test -f "$out_dir/shapes.txt"; then
+					if [ -z "$_force" ]; then
+						echo "  (Skipping existing $out_dir, use -f to overwrite)"
+						continue
+					fi
 				fi
-			fi
-			echo " +++ Testing mean=$i with standard dev $stddev +++"
-			pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
+				echo " +++ Testing mean=$i with standard dev $stddev +++"
+				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
+			done
 		done
 	done
 fi
 
 if [ $_method == "emission-progr-ours-sm-lm" ]; then
-	# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 8192 meters
-	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
+	for j in 1 2 3 4 5 6 7 8 9 10
 	do
-		lambda_em=$(echo "scale=5; 1 / $i" | bc)
-		for stddev in 0 10 20 30 40 50 60 70 80 90 100
+		# assume a fixed transition lambda and test emission means here on a log scale, from 1 to 4096 meters
+		for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
 		do
-			out_dir=$_output/$stddev/$i
-			mkdir -p $out_dir
-			if test -f "$out_dir/shapes.txt"; then
-				if [ -z "$_force" ]; then
-					echo "  (Skipping existing $out_dir, use -f to overwrite)"
-					continue
+			lambda_em=$(echo "scale=5; 1 / $i" | bc)
+			for stddev in 0 10 20 30 40 50 60 70 80 90 100 110 120 130
+			do
+				out_dir=$_output/run-$j/$stddev/$i
+				mkdir -p $out_dir
+				if test -f "$out_dir/shapes.txt"; then
+					if [ -z "$_force" ]; then
+						echo "  (Skipping existing $out_dir, use -f to overwrite)"
+						continue
+					fi
 				fi
-			fi
-			echo " +++ Testing mean=$i with standard dev $stddev +++"
-			pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -o $out_dir
+				echo " +++ Testing mean=$i with standard dev $stddev +++"
+				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -o $out_dir
+			done
 		done
 	done
 fi
 
 if [ $_method == "transition-progr-dist-diff" ]; then
-	# assume a fixed emission lambda and test transition means here on a log scale, from 1 to 8192 meters
-	for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
+	for j in 1 2 3 4 5 6 7 8 9 10
 	do
-		lambda_t=$(echo "scale=5; 1 / $i" | bc)
-		for stddev in 0 10 20 30 40 50 60 70 80 90 100
+		# assume a fixed emission lambda and test transition means here on a log scale, from 1 to 4096 meters
+		for i in 1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192
 		do
-			out_dir=$_output/$stddev/$i
-			mkdir -p $out_dir
-			if test -f "$out_dir/shapes.txt"; then
-				if [ -z "$_force" ]; then
-					echo "  (Skipping existing $out_dir, use -f to overwrite)"
-					continue
+			lambda_t=$(echo "scale=5; 1 / $i" | bc)
+			for stddev in 0 10 20 30 40 50 60 70 80 90 100 110 120 130
+			do
+				out_dir=$_output/run-$j/$stddev/$i
+				mkdir -p $out_dir
+				if test -f "$out_dir/shapes.txt"; then
+					if [ -z "$_force" ]; then
+						echo "  (Skipping existing $out_dir, use -f to overwrite)"
+						continue
+					fi
 				fi
-			fi
-			echo " +++ Testing mean=$i with standard dev $stddev +++"
-			# lambda=1/4.07=0.2457 from original microsoft paper
-			pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_emission_method:norm" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0.2457" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:$lambda_t" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_method:distdiff" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:no" -o $out_dir
+				echo " +++ Testing mean=$i with standard dev $stddev +++"
+				# lambda=1/4.07=0.2457 from original microsoft paper
+				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_emission_method:norm" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0.2457" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:$lambda_t" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_method:distdiff" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:no" -o $out_dir
+			done
 		done
 	done
 fi

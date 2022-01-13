@@ -12,7 +12,7 @@ NOISE = 30
 
 DATASETS = vitoria-gasteiz zurich seattle wien sydney paris switzerland germany
 GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich seattle wien sydney
-#GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich seattle
+#GROUND_TRUTH_DATASETS = vitoria-gasteiz
 
 OSM_URL = http://download.geofabrik.de/europe-latest.osm.pbf
 OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-oceania/australia-latest.osm.pbf
@@ -46,7 +46,7 @@ PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm.tex, 
 PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm.tex, $(GROUND_TRUTH_DATASETS))
 PLOTS-DIST-DIFF := $(patsubst %, $(PLOTS_DIR)/%/transition-progr-dist-diff, $(GROUND_TRUTH_DATASETS))
 
-PLOTS-AVG := $(PLOTS_DIR)/emission-progr-ours-raw.tex  $(PLOTS_DIR)/emission-progr-ours-sm-avg.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-avg.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-avg.tex $(PLOTS_DIR)/transition-progr-dist-diff-avg.tex
+PLOTS-ALL := $(PLOTS_DIR)/emission-progr-ours-raw.tex  $(PLOTS_DIR)/emission-progr-ours-sm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/transition-progr-dist-diff-all.tex
 
 .SECONDARY:
 
@@ -109,11 +109,15 @@ $(RESULTS_DIR)/%/dist-diff/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 
 	@# averaging because of gaussian noise
 	@# lambda_em=1/4.07=0.2457 from original microsoft paper
-	@# lambda_em=1/30=0.03 using the standard deviation of the noise we use
-	@# lambda_t=1/28 ? from microsoft paper estimator, based on median distdiff in vitoria-gasteiz TODO: take average median over all test datasets
-	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+	@# lambda_t~1/17.0387 from microsoft paper estimator, based on average median distdiff over testing datasets:
+	@# 18.7555 vitoria
+	@# 18.966 zurich
+	@# 1.009 seattle
+	@# 7.77 wien
+	@# 12.551 sydney
+	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
-		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_emission_method:norm" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0.2457" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_method:distdiff" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:0.0357" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:no" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
+		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_emission_method:norm" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0.2457" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_method:distdiff" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:0.0586901" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:no" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
 
 	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
@@ -123,7 +127,7 @@ $(RESULTS_DIR)/%/gsts/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (G-STS) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
@@ -135,7 +139,7 @@ $(RESULTS_DIR)/%/ours-raw/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
@@ -147,7 +151,7 @@ $(RESULTS_DIR)/%/ours-sm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-SM) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
@@ -159,7 +163,7 @@ $(RESULTS_DIR)/%/ours-lm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
@@ -171,7 +175,7 @@ $(RESULTS_DIR)/%/ours-sm-lm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
+	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
@@ -256,32 +260,33 @@ $(GTFS_DIR)/sydney.zip:
 	@exit 1
 
 ## plots
-$(PLOTS_DIR)/%/emission-progr-ours-raw: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(PLOTS_DIR)/%/run-1 $(PLOTS_DIR)/%/run-2 $(PLOTS_DIR)/%/run-3 $(PLOTS_DIR)/%/run-4 $(PLOTS_DIR)/%/run-5 $(PLOTS_DIR)/%/run-6 $(PLOTS_DIR)/%/run-7 $(PLOTS_DIR)/%/run-8 $(PLOTS_DIR)/%/run-9 $(PLOTS_DIR)/%/run-10 : script/eval.sh $(GTFS_DIR)/ex/$$(subst /, ,$$(dir %)) $(OSM_DIR)/$$(subst /,,$$(dir %)).osm
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m emission-progr-ours-raw -x $(OSM_DIR)/$*.osm -c $(CONFIG) --output $@ $(GTFS_DIR)/ex/$*
+	@./script/eval.sh -m $(basename $(notdir $*)) -x $(OSM_DIR)/$(subst /,,$(dir $*)).osm -c $(CONFIG) --output $(PLOTS_DIR)/$* $(GTFS_DIR)/ex/$(dir $*)
 
-$(PLOTS_DIR)/%/emission-progr-ours-sm: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(PLOTS_DIR)/%-all.tsv: $(patsubst %, $(PLOTS_DIR)/%/$$*-avg.tsv, $(GROUND_TRUTH_DATASETS))
+	@# take the average of the input file columns
+	@cat $< | cut -f1,2 > tmp1
+	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]+\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
+	@paste -d ' ' tmp1 tmp2 > $@
+
+$(PLOTS_DIR)/%-avg.tsv: $(PLOTS_DIR)/%/run-1-res.tsv  $(PLOTS_DIR)/%/run-2-res.tsv $(PLOTS_DIR)/%/run-3-res.tsv $(PLOTS_DIR)/%/run-4-res.tsv $(PLOTS_DIR)/%/run-5-res.tsv $(PLOTS_DIR)/%/run-6-res.tsv $(PLOTS_DIR)/%/run-7-res.tsv $(PLOTS_DIR)/%/run-8-res.tsv $(PLOTS_DIR)/%/run-9-res.tsv $(PLOTS_DIR)/%/run-10-res.tsv
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m emission-progr-ours-sm -x $(OSM_DIR)/$*.osm -c $(CONFIG) --output $@ $(GTFS_DIR)/ex/$*
+	@# take the average of the input file columns
+	@cat $< | cut -f1,2 > tmp1
+	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]+\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
+	@paste -d ' ' tmp1 tmp2 > $@
 
-$(PLOTS_DIR)/%/emission-progr-ours-sm-lm: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(PLOTS_DIR)/%-res.tsv: $(PLOTS_DIR)/%
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m emission-progr-ours-sm-lm -x $(OSM_DIR)/$*.osm -c $(CONFIG) --output $@ $(GTFS_DIR)/ex/$*
+	$(SHAPEVL) -g $(GTFS_DIR)/ex/$(firstword $(subst /, ,$*)) -s $(PLOTS_DIR)/$*/*/* | rev | cut -d'/' -f 1,2 --output-delimiter ' ' | rev | sort -n -k2 -k1 | cut -d':' -f1,2 --output-delimiter ',' | cut -d',' -f1,4 --output-delimiter ' ' | tr -s ' ' '\t' > $@
 
-$(PLOTS_DIR)/%/transition-progr-dist-diff: script/eval.sh $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
-	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m transition-progr-dist-diff -x $(OSM_DIR)/$*.osm -c $(CONFIG) --output $@ $(GTFS_DIR)/ex/$*
-
-$(PLOTS_DIR)/%.tsv: $(PLOTS_DIR)/% $(GTFS_DIR)/ex/$$(firstword $$(subst /, ,%))
-	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@$(SHAPEVL) -g $(GTFS_DIR)/ex/$(firstword $(subst /, ,$*)) -s $(PLOTS_DIR)/$*/*/* | rev | cut -d'/' -f 1,2 --output-delimiter ' ' | rev | sort -n -k2 -k1 | cut -d':' -f1,2 --output-delimiter ',' | cut -d',' -f1,4 --output-delimiter ' ' | tr -s ' ' '\t' > $@
-
-$(PLOTS_DIR)/%/transition-progr-dist-diff.tex: $(PLOTS_DIR)/%/transition-progr-dist-diff.tsv script/plot3d.p
+$(PLOTS_DIR)/%/transition-progr-dist-diff-avg.tex: $(PLOTS_DIR)/%/transition-progr-dist-diff-avg.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_t}$$'" script/plot3d.p
 	@pdflatex -output-directory=$(PLOTS_DIR)/$* $@
 
-$(PLOTS_DIR)/transition-progr-dist-diff-avg.tex: $(PLOTS_DIR)/transition-progr-dist-diff-avg.tsv script/plot3d.p
+$(PLOTS_DIR)/transition-progr-dist-diff-all.tex: $(PLOTS_DIR)/transition-progr-dist-diff-all.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_t}$$'" script/plot3d.p
 	@pdflatex -output-directory=$(PLOTS_DIR) $@
@@ -290,12 +295,6 @@ $(PLOTS_DIR)/%.tex: $(PLOTS_DIR)/%.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_d}$$'" script/plot3d.p
 	pdflatex -output-directory=$(dir $(PLOTS_DIR)/$*) $@
-
-$(PLOTS_DIR)/%-avg.tsv: $(patsubst %%, $(PLOTS_DIR)/%%/%.tsv, $(GROUND_TRUTH_DATASETS))
-	@# take the average of the input file columns
-	@cat $< | cut -f1,2 > tmp1
-	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]+\.[0-9]+)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
-	@paste -d ' ' tmp1 tmp2 > $@
 
 ## tables
 $(TABLES_DIR)/%.pdf: $(TABLES_DIR)/%.tex
@@ -322,7 +321,7 @@ $(TABLES_DIR)/tbl-main-res-max-frech.tex: script/table.py script/template.tex $(
 	@mkdir -p $(TABLES_DIR)
 	@python3 script/table.py mainres-max-frech $(patsubst %, $(RESULTS_DIR)/%, $(DATASETS)) > $@
 
-plots: $(PLOTS-OURS-RAW) $(PLOTS-OURS-SM) $(PLOTS-OURS-SM-LM) $(PLOTS-OURS-SM-LM) $(PLOTS-DIST-DIFF) $(PLOTS-AVG)
+plots: $(PLOTS-OURS-RAW) $(PLOTS-OURS-SM) $(PLOTS-OURS-SM-LM) $(PLOTS-OURS-SM-LM) $(PLOTS-DIST-DIFF) $(PLOTS-ALL)
 tables: $(TABLES_DIR)/tbl-overview.pdf $(TABLES_DIR)/tbl-time.pdf $(TABLES_DIR)/tbl-main-res.pdf $(TABLES_DIR)/tbl-main-res-max-frech.tex
 
 check:
