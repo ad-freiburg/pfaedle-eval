@@ -12,7 +12,7 @@ NOISE = 30
 
 DATASETS = vitoria-gasteiz zurich seattle wien sydney paris switzerland germany
 GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich seattle wien sydney
-#GROUND_TRUTH_DATASETS = vitoria-gasteiz
+#GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich seattle
 
 OSM_URL = http://download.geofabrik.de/europe-latest.osm.pbf
 OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-oceania/australia-latest.osm.pbf
@@ -45,6 +45,8 @@ PLOTS-OURS-SM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm.tex, $(GROU
 PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm.tex, $(GROUND_TRUTH_DATASETS))
 PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm.tex, $(GROUND_TRUTH_DATASETS))
 PLOTS-DIST-DIFF := $(patsubst %, $(PLOTS_DIR)/%/transition-progr-dist-diff, $(GROUND_TRUTH_DATASETS))
+
+PLOTS-AVG := $(PLOTS_DIR)/emission-progr-ours-raw.tex  $(PLOTS_DIR)/emission-progr-ours-sm-avg.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-avg.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-avg.tex $(PLOTS_DIR)/transition-progr-dist-diff-avg.tex
 
 .SECONDARY:
 
@@ -279,10 +281,21 @@ $(PLOTS_DIR)/%/transition-progr-dist-diff.tex: $(PLOTS_DIR)/%/transition-progr-d
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_t}$$'" script/plot3d.p
 	@pdflatex -output-directory=$(PLOTS_DIR)/$* $@
 
+$(PLOTS_DIR)/transition-progr-dist-diff-avg.tex: $(PLOTS_DIR)/transition-progr-dist-diff-avg.tsv script/plot3d.p
+	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
+	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_t}$$'" script/plot3d.p
+	@pdflatex -output-directory=$(PLOTS_DIR) $@
+
 $(PLOTS_DIR)/%.tex: $(PLOTS_DIR)/%.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_d}$$'" script/plot3d.p
-	@pdflatex -output-directory=$(PLOTS_DIR)/$*/.. $@
+	pdflatex -output-directory=$(dir $(PLOTS_DIR)/$*) $@
+
+$(PLOTS_DIR)/%-avg.tsv: $(patsubst %%, $(PLOTS_DIR)/%%/%.tsv, $(GROUND_TRUTH_DATASETS))
+	@# take the average of the input file columns
+	@cat $< | cut -f1,2 > tmp1
+	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]+\.[0-9]+)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
+	@paste -d ' ' tmp1 tmp2 > $@
 
 ## tables
 $(TABLES_DIR)/%.pdf: $(TABLES_DIR)/%.tex
@@ -309,7 +322,7 @@ $(TABLES_DIR)/tbl-main-res-max-frech.tex: script/table.py script/template.tex $(
 	@mkdir -p $(TABLES_DIR)
 	@python3 script/table.py mainres-max-frech $(patsubst %, $(RESULTS_DIR)/%, $(DATASETS)) > $@
 
-plots: $(PLOTS-OURS-RAW) $(PLOTS-OURS-SM) $(PLOTS-OURS-SM-LM) $(PLOTS-OURS-SM-LM) $(PLOTS-DIST-DIFF)
+plots: $(PLOTS-OURS-RAW) $(PLOTS-OURS-SM) $(PLOTS-OURS-SM-LM) $(PLOTS-OURS-SM-LM) $(PLOTS-DIST-DIFF) $(PLOTS-AVG)
 tables: $(TABLES_DIR)/tbl-overview.pdf $(TABLES_DIR)/tbl-time.pdf $(TABLES_DIR)/tbl-main-res.pdf $(TABLES_DIR)/tbl-main-res-max-frech.tex
 
 check:
