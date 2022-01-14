@@ -13,8 +13,9 @@ import math
 DATASET_LABELS = {
     "zurich": "Zurich",
     "vitoria-gasteiz": "Vit.-Gast.",
-    "vrs": "Rhein-Sieg",
+    "seattle": "Seattle",
     "sydney": "Sydney",
+    "wien": "Vienna",
     "paris": "Paris",
     "switzerland": "Switzerland",
     "germany": "Germany",
@@ -23,7 +24,9 @@ DATASET_LABELS = {
 DATASET_LABELS_SHORT = {
     "zurich": "ZH",
     "vitoria-gasteiz": "VG",
-    "vrs": "VRS",
+    "sydney": "SY",
+    "wien": "V",
+    "seattle": "SE",
     "sydney": "SY",
     "paris": "P",
     "switzerland": "CH",
@@ -267,17 +270,18 @@ def tbl_main_res_time(results):
 
     for dataset_id in sort:
         r = results[dataset_id]
+        m = sorted([(get(r, m, "time_solve"), m) for m in r])
         ret += "%s && %s & %s & %s & %s & %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
-                            format_msecs(get(r, "baseline", "time_solve")),
-                            format_msecs(get(r, "cached", "time_solve")),
-                            format_msecs(get(r, "fasthops", "time_solve")),
-                            format_msecs(get(r, "trie-cached", "time_solve")),
-                            format_msecs(get(r, "trie-fasthops", "time_solve")),
-                            format_msecs(get(r, "baseline-star", "time_solve")),
-                            format_msecs(get(r, "cached-star", "time_solve")),
-                            format_msecs(get(r, "fasthops-star", "time_solve")),
-                            format_msecs(get(r, "trie-cached-star", "time_solve")),
-                            format_msecs(get(r, "trie-fasthops-star", "time_solve")),
+                            bold_if(format_msecs(get(r, "baseline", "time_solve")), m[0][1] == "baseline"),
+                            bold_if(format_msecs(get(r, "cached", "time_solve")), m[0][1] == "cached"),
+                            bold_if(format_msecs(get(r, "fasthops", "time_solve")), m[0][1] == "fasthops"),
+                            bold_if(format_msecs(get(r, "trie-cached", "time_solve")), m[0][1] == "trie-cached"),
+                            bold_if(format_msecs(get(r, "trie-fasthops", "time_solve")), m[0][1] == "trie-fasthops"),
+                            bold_if(format_msecs(get(r, "baseline-star", "time_solve")), m[0][1] == "baseline-star"),
+                            bold_if(format_msecs(get(r, "cached-star", "time_solve")), m[0][1] == "cached-star"),
+                            bold_if(format_msecs(get(r, "fasthops-star", "time_solve")), m[0][1] == "fasthops-star"),
+                            bold_if(format_msecs(get(r, "trie-cached-star", "time_solve")), m[0][1] == "trie-cached-star"),
+                            bold_if(format_msecs(get(r, "trie-fasthops-star", "time_solve")), m[0][1] == "trie-fasthops-star"),
                             )
 
     ret += "\\bottomrule"

@@ -255,7 +255,7 @@ $(GTFS_DIR)/germany.zip:
 $(GTFS_DIR)/sydney.zip:
 	@mkdir -p $(GTFS_DIR)
 	@echo "*******************************************"
-	@echo Please register and download latest GTFS version from https://opendata.transport.nsw.gov.au/dataset/timetables-complete-gtfs/resource/67974f14-01bf-47b7-bfa5-c7f2f8a950ca to $@
+	@echo "Please register and download latest GTFS version from https://opendata.transport.nsw.gov.au/dataset/timetables-complete-gtfs/resource/67974f14-01bf-47b7-bfa5-c7f2f8a950ca to $@"
 	@echo "*******************************************"
 	@exit 1
 
