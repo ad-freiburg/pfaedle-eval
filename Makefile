@@ -248,7 +248,7 @@ $(GTFS_DIR)/switzerland.zip:
 $(GTFS_DIR)/germany.zip:
 	@mkdir -p $(GTFS_DIR)
 	@echo "*******************************************"
-	@echo Please register and download latest GTFS version from https://www.opendata-oepnv.de/ht/de/organisation/delfi/startseite?tx_vrrkit_view%5Bdataset_name%5D=deutschlandweite-sollfahrplandaten-gtfs&tx_vrrkit_view%5Bdataset_formats%5D%5B0%5D=ZIP&tx_vrrkit_view%5Baction%5D=details&tx_vrrkit_view%5Bcontroller%5D=View to $@
+	@echo "Please register and download latest GTFS version from https://www.opendata-oepnv.de/ht/de/organisation/delfi/startseite?tx_vrrkit_view%5Bdataset_name%5D=deutschlandweite-sollfahrplandaten-gtfs&tx_vrrkit_view%5Bdataset_formats%5D%5B0%5D=ZIP&tx_vrrkit_view%5Baction%5D=details&tx_vrrkit_view%5Bcontroller%5D=View to $@"
 	@echo "*******************************************"
 	@exit 1
 
