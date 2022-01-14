@@ -150,7 +150,7 @@ def bold_if(s, t):
 def tbl_overview(results):
     ret = "\\begin{table}\n"
     ret += "  \\centering\n"
-    ret += "  \\caption[]{Dimensions of our testing datasets. Under \emph{stations} we give the total number of stations contained in the GTFS feed. Under \emph{trips} we give the total number of contained trips. Under \emph{unique trips} we give the number of trips that only differ in their attributes (MOT, line name) and their station course, but not in the time offset at the first station or the service date. Under \emph{tries} we give the number of trip tries (unique trips sharing common station course prefixes). Under \emph{shapes} we denote whether ground truth shape data was available. The total number of edges over all transportation network graphs for all MOTs is given under $|E|$.\label{TBL:pfaedle:datasets}}\n"
+    ret += "  \\caption[]{Dimensions of our map-matching evaluation datasets. Under \emph{stations} we give the total number of stations contained in the GTFS feed. Under \emph{trips} we give the total number of contained trips. Under \emph{unique trips} we give the number of trips that only differ in their attributes (MOT, line name) and their station course, but not in the time offset at the first station or the service date. Under \emph{tries} we give the number of trip tries (unique trips sharing common station course prefixes). Under \emph{shapes} we denote whether ground truth shape data was available. The total number of edges over all transportation network graphs for all MOTs is given under $|E|$.\label{TBL:pfaedle:datasets}}\n"
     ret += "    {\\renewcommand{\\baselinestretch}{1.13}\\normalsize\\setlength\\tabcolsep{3pt}\n"
 
     ret += "  \\begin{tabular*}{\\textwidth}{@{\\extracolsep{\\fill}} l r r r r c r} \\toprule\n       & stations & trips & unique trips & tries & shapes & $|E|$\\\\\\midrule\n"
@@ -169,7 +169,7 @@ def tbl_overview(results):
                                                                     format_int(r["trie-fasthops-star"]["gtfs_num_trips"]),
                                                                     format_int(r["trie-fasthops-star"]["num_trie_leafs"]),
                                                                     format_int(r["trie-fasthops-star"]["num_tries"]),
-                                                                    "$\\bullet$" if r["trie-fasthops-star"]["gtfs_has_shapes"] else "",
+                                                                    "TODO",
                                                                     format_int(r["trie-fasthops-star"]["num_edges_tot"]))
 
     ret += "\\bottomrule"
