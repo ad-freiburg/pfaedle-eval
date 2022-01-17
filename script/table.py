@@ -264,6 +264,8 @@ def tbl_main_res_time(results):
 
     sort = []
     for dataset_id in results:
+        if dataset_id not in {"baseline", "cached", "fasthops", "trie-cached", "trie-fasthops", "baseline-star", "cached-star", "fasthops-star", "trie-cached-star", "trie-fasthops-star"}:
+            continue
         sort.append(dataset_id)
 
     sort = sorted(
