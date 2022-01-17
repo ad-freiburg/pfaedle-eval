@@ -164,7 +164,7 @@ def tbl_overview(results):
 
     for dataset_id in sort:
         r = results[dataset_id]
-        ret += "    %s & %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS[dataset_id] + " (" + DATASET_LABELS_SHORT[dataset_id] + ")",
+        ret += "    %s & %s & %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS[dataset_id] + " (" + DATASET_LABELS_SHORT[dataset_id] + ")",
                                                                     format_int(get(r, "trie-fasthops-star", "gtfs_num_stations")),
                                                                     format_float(get(r, "trie-fasthops-star", "gtfs_avg_hop_dist")),
                                                                     format_int(get(r, "trie-fasthops-star", "gtfs_num_trips")),
