@@ -256,11 +256,11 @@ def tbl_main_res_max_frech(results):
 def tbl_main_res_time(results):
     ret = "\\begin{table}\n"
     ret += "  \\centering\n"
-    ret += "  \\caption[]{Running times of our baseline approach B (clustered equivalent trips and $n$ 1-to-$m$ Dijkstra runs between layers), CA (with shortest path cost caching), SDL (single Dijkstra run between two layers), CA+TRIE (shortest path cost caching on a trip trie), and SDL+TRIE (single Dijkstra run between layers on a trip trie). The unstarred version use a standard Dijkstra implementation, the starred versions use the $A^*$ heuristic described in Section~\TODO{}. Best times are printed bold. \\label{TBL:pfaedle:res-time}}\n"
+    ret += "  \\caption[]{Running times of our baseline approach B (clustered equivalent trips and $n$ 1-to-$m$ Dijkstra runs between layers), CA (with shortest path cost caching), SDL (single Dijkstra run between two layers), CA+TR (shortest path cost caching on a trip trie), and SDL+TR (single Dijkstra run between layers on a trip trie). The unstarred version use a standard Dijkstra implementation, the starred versions use the $A^*$ heuristic described in Section~\TODO{}. Best times are printed bold. \\label{TBL:pfaedle:res-time}}\n"
     ret += "    {\\renewcommand{\\baselinestretch}{1.13}\\normalsize\\setlength\\tabcolsep{5pt}\n"
 
-    ret += "\\begin{tabular*}{\\textwidth}{@{\extracolsep{\\fill}} l r r r r r r r r r r r}\n"
-    ret += " && \\footnotesize{B} & \\footnotesize{CA} & \\footnotesize{SDL} & \\footnotesize{CA+TRIE} & \\footnotesize{SDL+TRIE} & \\footnotesize{B*} & \\footnotesize{CA*} & \\footnotesize{SDL*} & \\footnotesize{CA+TRIE*} & \\footnotesize{SDL+TRIE*} \\\\\\toprule\n"
+    ret += "\\begin{tabular*}{\\textwidth}{@{\extracolsep{\\fill}} l r r r r r r r r r r r r}\n"
+    ret += " && \\footnotesize{B} & \\footnotesize{CA} & \\footnotesize{SDL} & \\footnotesize{CA+TR} & \\footnotesize{SDL+TR} & \\footnotesize{B*} & \\footnotesize{CA*} & \\footnotesize{SDL*} & \\footnotesize{CA+TR*} & \\footnotesize{SDL+TR*} \\\\\\toprule\n"
 
     sort = []
     for dataset_id in results:
@@ -272,7 +272,7 @@ def tbl_main_res_time(results):
     for dataset_id in sort:
         r = results[dataset_id]
         m = sorted([(get(r, m, "time_solve"), m) for m in r])
-        ret += "%s && %s & %s & %s & %s & %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
+        ret += "%s && %s & %s & %s & %s & %s & %s & %s & %s & %s & %s &\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
                             bold_if(format_msecs(get(r, "baseline", "time_solve")), m[0][1] == "baseline"),
                             bold_if(format_msecs(get(r, "cached", "time_solve")), m[0][1] == "cached"),
                             bold_if(format_msecs(get(r, "fasthops", "time_solve")), m[0][1] == "fasthops"),
