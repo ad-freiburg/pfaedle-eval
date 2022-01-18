@@ -319,12 +319,12 @@ $(TABLES_DIR)/tbl-main-res.tex: script/table.py script/template.tex $(GSTS) $(OU
 	@mkdir -p $(TABLES_DIR)
 	@python3 script/table.py mainres $(patsubst %, $(RESULTS_DIR)/%, $(DATASETS)) > $@
 
-$(TABLES_DIR)/tbl-main-res-max-frech.tex: script/table.py script/template.tex $(GSTS) $(OURS-RAW) $(OURS-SM) $(OURS-LM) $(OURS-SM-LM) $(DIST-DIFF)
+$(TABLES_DIR)/tbl-main-res-avg-frech.tex: script/table.py script/template.tex $(GSTS) $(OURS-RAW) $(OURS-SM) $(OURS-LM) $(OURS-SM-LM) $(DIST-DIFF)
 	@mkdir -p $(TABLES_DIR)
-	@python3 script/table.py mainres-max-frech $(patsubst %, $(RESULTS_DIR)/%, $(DATASETS)) > $@
+	@python3 script/table.py mainres-avg-frech $(patsubst %, $(RESULTS_DIR)/%, $(DATASETS)) > $@
 
 plots: $(PLOTS-OURS-RAW) $(PLOTS-OURS-SM) $(PLOTS-OURS-SM-LM) $(PLOTS-OURS-SM-LM) $(PLOTS-DIST-DIFF) $(PLOTS-ALL)
-tables: $(TABLES_DIR)/tbl-overview.pdf $(TABLES_DIR)/tbl-time.pdf $(TABLES_DIR)/tbl-main-res.pdf $(TABLES_DIR)/tbl-main-res-max-frech.tex
+tables: $(TABLES_DIR)/tbl-overview.pdf $(TABLES_DIR)/tbl-time.pdf $(TABLES_DIR)/tbl-main-res.pdf $(TABLES_DIR)/tbl-main-res-avg-frech.tex
 
 check:
 	@echo "pfaedle version:" `$(PFAEDLE) --version`

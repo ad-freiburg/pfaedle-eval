@@ -200,7 +200,7 @@ def tbl_main_res(results):
 
     for dataset_id in sort:
         r = results[dataset_id]
-        m = sorted([(get(r, m, "an-10"), m) for m in r], reverse=True)
+        m = sorted([((get(r, m, "an-10") if get(r, m, "an-10") is not None else 0), m) for m in r], reverse=True)
 
         ret += "%s && %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
                             bold_if(format_perc(get(r, "gsts", "an-10")), "gsts" == m[0][1]),
@@ -217,10 +217,10 @@ def tbl_main_res(results):
 
     return ret
 
-def tbl_main_res_max_frech(results):
+def tbl_main_res_avg_frech(results):
     ret = "\\begin{table}\n"
     ret += "  \\centering\n"
-    ret += "  \\caption[]{Maximum avg Frechet dist in meters}\n"
+    ret += "  \\caption[]{Averaged Frechet dist in meters, averaged over all trips}\n"
     ret += "    {\\renewcommand{\\baselinestretch}{1.13}\\normalsize\\setlength\\tabcolsep{5pt}\n"
 
     ret += "\\begin{tabular*}{\\textwidth}{@{\extracolsep{\\fill}} l r r r r r r r}\n"
@@ -236,15 +236,15 @@ def tbl_main_res_max_frech(results):
 
     for dataset_id in sort:
         r = results[dataset_id]
-        m = sorted([(get(r, m, "max-avg-frech-dist"), m) for m in r])
+        m = sorted([((get(r, m, "avg-fr") if get(r, m, "avg-fr") is not None else 999), m) for m in r])
 
         ret += "%s && %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
-                            bold_if(format_float(get(r, "gsts", "max-avg-frech-dist")), m[0][1] == "gsts"),
-                            bold_if(format_float(get(r, "dist-diff", "max-avg-frech-dist")), m[0][1] == "dist-diff"),
-                            bold_if(format_float(get(r, "ours-raw", "max-avg-frech-dist")), m[0][1] == "ours-raw"),
-                            bold_if(format_float(get(r, "ours-sm", "max-avg-frech-dist")), m[0][1] == "ours-sm"),
-                            bold_if(format_float(get(r, "ours-lm", "max-avg-frech-dist")), m[0][1] == "ours-lm"),
-                            bold_if(format_float(get(r, "ours-sm-lm", "max-avg-frech-dist")), m[0][1] == "ours-sm-lm"),
+                            bold_if(format_float(get(r, "gsts", "avg-fr")), m[0][1] == "gsts"),
+                            bold_if(format_float(get(r, "dist-diff", "avg-fr")), m[0][1] == "dist-diff"),
+                            bold_if(format_float(get(r, "ours-raw", "avg-fr")), m[0][1] == "ours-raw"),
+                            bold_if(format_float(get(r, "ours-sm", "avg-fr")), m[0][1] == "ours-sm"),
+                            bold_if(format_float(get(r, "ours-lm", "avg-fr")), m[0][1] == "ours-lm"),
+                            bold_if(format_float(get(r, "ours-sm-lm", "avg-fr")), m[0][1] == "ours-sm-lm"),
                             )
 
     ret += "\\bottomrule"
@@ -316,8 +316,8 @@ def main():
     if sys.argv[1] == "mainres":
         print(tbl_main_res(results))
 
-    if sys.argv[1] == "mainres-max-frech":
-        print(tbl_main_res_max_frech(results))
+    if sys.argv[1] == "mainres-avg-frech":
+        print(tbl_main_res_avg_frech(results))
 
 
 if __name__ == "__main__":
