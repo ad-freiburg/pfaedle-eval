@@ -1,3 +1,7 @@
+# (C) 2021 University of Freiburg
+# Chair of Algorithms and Data Structures
+# Authors: Patrick Brosi (brosi@cs.uni-freiburg.de)
+
 PFAEDLE = pfaedle
 SHAPEVL = shapevl
 CONFIG = eval.cfg
@@ -10,14 +14,12 @@ OSM_DIR := osm
 
 NOISE = 30
 
-DATASETS = vitoria-gasteiz zurich seattle wien sydney paris switzerland germany
-GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich seattle wien sydney
-#GROUND_TRUTH_DATASETS = vitoria-gasteiz
+DATASETS = vitoria-gasteiz zurich seattle wien paris switzerland germany #sydney
+GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich seattle wien #sydney  // takes too long to evaluate
 
 OSM_URL = http://download.geofabrik.de/europe-latest.osm.pbf
 OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-oceania/australia-latest.osm.pbf
 OSM_URL_WASHINGTON = http://download.geofabrik.de/north-america/us/washington-latest.osm.pbf
-#OSM_URL = http://download.geofabrik.de/europe/spain-latest.osm.pbf
 
 # time comp
 TRIE_FASTHOPS_STAR := $(patsubst %, $(RESULTS_DIR)/%/trie-fasthops-star/stats.json, $(DATASETS))
@@ -46,7 +48,7 @@ PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm.tex, 
 PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm.tex, $(GROUND_TRUTH_DATASETS))
 PLOTS-DIST-DIFF := $(patsubst %, $(PLOTS_DIR)/%/transition-progr-dist-diff, $(GROUND_TRUTH_DATASETS))
 
-PLOTS-ALL := $(PLOTS_DIR)/emission-progr-ours-raw.tex  $(PLOTS_DIR)/emission-progr-ours-sm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/transition-progr-dist-diff-all.tex
+PLOTS-ALL := $(PLOTS_DIR)/emission-progr-ours-raw-all.tex  $(PLOTS_DIR)/emission-progr-ours-sm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/transition-progr-dist-diff-all.tex
 
 .SECONDARY:
 
@@ -225,7 +227,7 @@ $(GTFS_DIR)/zurich.zip:
 	@curl -L --progress-bar https://data.stadt-zuerich.ch/dataset/vbz_fahrplandaten_gtfs/download/2022_google_transit.zip > $@
 
 $(GTFS_DIR)/vitoria-gasteiz.zip:
-	@#this is the last version with shape_dist_travelled
+	@#this is the last version with shape_dist_travelled, which we need for the evaluation
 	@mkdir -p $(GTFS_DIR)
 	@curl -L --progress-bar https://transitfeeds.com/p/tuvisa-euskotran/239/20211020/download > $@
 
