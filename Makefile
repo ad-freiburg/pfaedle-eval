@@ -42,11 +42,11 @@ OURS-SM := $(patsubst %, $(RESULTS_DIR)/%/ours-sm/stats.json, $(GROUND_TRUTH_DAT
 OURS-LM := $(patsubst %, $(RESULTS_DIR)/%/ours-lm/stats.json, $(GROUND_TRUTH_DATASETS))
 OURS-SM-LM := $(patsubst %, $(RESULTS_DIR)/%/ours-sm-lm/stats.json, $(GROUND_TRUTH_DATASETS))
 
-PLOTS-OURS-RAW := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-raw.tex, $(GROUND_TRUTH_DATASETS))
-PLOTS-OURS-SM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm.tex, $(GROUND_TRUTH_DATASETS))
-PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm.tex, $(GROUND_TRUTH_DATASETS))
-PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm.tex, $(GROUND_TRUTH_DATASETS))
-PLOTS-DIST-DIFF := $(patsubst %, $(PLOTS_DIR)/%/transition-progr-dist-diff, $(GROUND_TRUTH_DATASETS))
+PLOTS-OURS-RAW := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-raw-avg.tex, $(GROUND_TRUTH_DATASETS))
+PLOTS-OURS-SM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-avg.tex, $(GROUND_TRUTH_DATASETS))
+PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm-avg.tex, $(GROUND_TRUTH_DATASETS))
+PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm-avg.tex, $(GROUND_TRUTH_DATASETS))
+PLOTS-DIST-DIFF := $(patsubst %, $(PLOTS_DIR)/%/transition-progr-dist-diff-avg.tex, $(GROUND_TRUTH_DATASETS))
 
 PLOTS-ALL := $(PLOTS_DIR)/emission-progr-ours-raw-all.tex  $(PLOTS_DIR)/emission-progr-ours-sm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/transition-progr-dist-diff-all.tex
 
@@ -338,7 +338,6 @@ help:
 	@cat README.md
 
 clean:
-	@rm -rf osm
 	@rm -rf $(GTFS_DIR)
 	@rm -rf $(RESULTS_DIR)
 	@rm -rf $(TABLES_DIR)
