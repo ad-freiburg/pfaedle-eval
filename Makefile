@@ -44,11 +44,11 @@ OURS-SM-LM := $(patsubst %, $(RESULTS_DIR)/%/ours-sm-lm/stats.json, $(GROUND_TRU
 
 PLOTS-OURS-RAW := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-raw-avg.tex, $(GROUND_TRUTH_DATASETS))
 PLOTS-OURS-SM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-avg.tex, $(GROUND_TRUTH_DATASETS))
+PLOTS-OURS-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-lm-avg.tex, $(GROUND_TRUTH_DATASETS))
 PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm-avg.tex, $(GROUND_TRUTH_DATASETS))
-PLOTS-OURS-SM-LM := $(patsubst %, $(PLOTS_DIR)/%/emission-progr-ours-sm-lm-avg.tex, $(GROUND_TRUTH_DATASETS))
-PLOTS-DIST-DIFF := $(patsubst %, $(PLOTS_DIR)/%/transition-progr-dist-diff-avg.tex, $(GROUND_TRUTH_DATASETS))
+PLOTS-DIST-DIFF := $(patsubst %, $(PLOTS_DIR)/%/transition-progr-dist-diff-avg.tex, $(GROUND_TRUTH_DATASETS)) $(patsubst %, $(PLOTS_DIR)/%/emission-progr-dist-diff-avg.tex, $(GROUND_TRUTH_DATASETS))
 
-PLOTS-ALL := $(PLOTS_DIR)/emission-progr-ours-raw-all.tex  $(PLOTS_DIR)/emission-progr-ours-sm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/transition-progr-dist-diff-all.tex
+PLOTS-ALL := $(PLOTS_DIR)/emission-progr-ours-raw-all.tex  $(PLOTS_DIR)/emission-progr-ours-sm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/emission-progr-ours-sm-lm-all.tex $(PLOTS_DIR)/transition-progr-dist-diff-all.tex $(PLOTS_DIR)/emission-progr-dist-diff-all.tex
 
 .SECONDARY:
 
@@ -293,6 +293,16 @@ $(PLOTS_DIR)/transition-progr-dist-diff-all.tex: $(PLOTS_DIR)/transition-progr-d
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_t}$$'" script/plot3d.p
 	@pdflatex -output-directory=$(PLOTS_DIR) $@
 
+$(PLOTS_DIR)/%/emission-progr-dist-diff-avg.tex: $(PLOTS_DIR)/%/emission-progr-dist-diff-avg.tsv script/plot3d.p
+	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
+	@gnuplot -e "infile='$<';outfile='$@';label='$$\\sigma_e$$'" script/plot3d.p
+	@pdflatex -output-directory=$(PLOTS_DIR)/$* $@
+
+$(PLOTS_DIR)/emission-progr-dist-diff-all.tex: $(PLOTS_DIR)/emission-progr-dist-diff-all.tsv script/plot3d.p
+	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
+	@gnuplot -e "infile='$<';outfile='$@';label='$$\\sigma_e$$'" script/plot3d.p
+	@pdflatex -output-directory=$(PLOTS_DIR) $@
+
 $(PLOTS_DIR)/%.tex: $(PLOTS_DIR)/%.tsv script/plot3d.p
 	@printf "[%s] Generating plot $@ ...\n" "$$(date -Is)"
 	@gnuplot -e "infile='$<';outfile='$@';label='$$\\frac{1}{\\lambda_d}$$'" script/plot3d.p
@@ -323,7 +333,7 @@ $(TABLES_DIR)/tbl-main-res-avg-frech.tex: script/table.py script/template.tex $(
 	@mkdir -p $(TABLES_DIR)
 	@python3 script/table.py mainres-avg-frech $(patsubst %, $(RESULTS_DIR)/%, $(DATASETS)) > $@
 
-plots: $(PLOTS-OURS-RAW) $(PLOTS-OURS-SM) $(PLOTS-OURS-SM-LM) $(PLOTS-OURS-SM-LM) $(PLOTS-DIST-DIFF) $(PLOTS-ALL)
+plots: $(PLOTS-OURS-RAW) $(PLOTS-OURS-SM) $(PLOTS-OURS-LM) $(PLOTS-OURS-SM-LM) $(PLOTS-DIST-DIFF) $(PLOTS-ALL)
 tables: $(TABLES_DIR)/tbl-overview.pdf $(TABLES_DIR)/tbl-time.pdf $(TABLES_DIR)/tbl-main-res.pdf $(TABLES_DIR)/tbl-main-res-avg-frech.tex
 
 check:
