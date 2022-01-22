@@ -200,15 +200,15 @@ def tbl_main_res(results):
 
     for dataset_id in sort:
         r = results[dataset_id]
-        m = sorted([((get(r, m, "an-20") if get(r, m, "an-20") is not None else 0), m) for m in r], reverse=True)
+        m = sorted([((get(r, m, "an-10") if get(r, m, "an-10") is not None else 0), m) for m in r], reverse=True)
 
         ret += "%s && %s & %s & %s & %s & %s & %s\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
-                            bold_if(format_perc(get(r, "gsts", "an-20")), "gsts" == m[0][1]),
-                            bold_if(format_perc(get(r, "dist-diff", "an-20")), "dist-diff" == m[0][1]),
-                            bold_if(format_perc(get(r, "ours-raw", "an-20")), "ours-raw" == m[0][1]),
-                            bold_if(format_perc(get(r, "ours-sm", "an-20")), "ours-sm" == m[0][1]),
-                            bold_if(format_perc(get(r, "ours-lm", "an-20")), "ours-lm" == m[0][1]),
-                            bold_if(format_perc(get(r, "ours-sm-lm", "an-20")), "ours-sm-lm" == m[0][1]),
+                            bold_if(format_perc(get(r, "gsts", "an-10")), "gsts" == m[0][1]),
+                            bold_if(format_perc(get(r, "dist-diff", "an-10")), "dist-diff" == m[0][1]),
+                            bold_if(format_perc(get(r, "ours-raw", "an-10")), "ours-raw" == m[0][1]),
+                            bold_if(format_perc(get(r, "ours-sm", "an-10")), "ours-sm" == m[0][1]),
+                            bold_if(format_perc(get(r, "ours-lm", "an-10")), "ours-lm" == m[0][1]),
+                            bold_if(format_perc(get(r, "ours-sm-lm", "an-10")), "ours-sm-lm" == m[0][1]),
                             )
 
     ret += "\\bottomrule"
