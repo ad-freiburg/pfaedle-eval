@@ -16,7 +16,7 @@ set ylabel label
 
 set xlabel "$\\sigma$"
 
-set zlabel "$A_N^{10}$"
+set zlabel "$A_N^{20}$"
 
 set pm3d interpolate 2,2
 set dgrid3d 14,14 gauss 6.7,0.67

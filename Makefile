@@ -119,6 +119,10 @@ $(RESULTS_DIR)/%/dist-diff/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@# 12.551 sydney
 	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
+			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
+			continue \
+		fi \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_emission_method:norm" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0.2457" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_method:distdiff" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:0.0586901" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:no" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
 
@@ -129,8 +133,12 @@ $(RESULTS_DIR)/%/gsts/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (G-STS) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10; do \
+	for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
+			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
+			continue ; \
+		fi ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
 
@@ -143,6 +151,10 @@ $(RESULTS_DIR)/%/ours-raw/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@# averaging because of gaussian noise
 	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
+			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
+			continue ; \
+		fi ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
 
@@ -155,6 +167,10 @@ $(RESULTS_DIR)/%/ours-sm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@# averaging because of gaussian noise
 	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
+			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
+			continue ; \
+		fi ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
 
@@ -167,6 +183,10 @@ $(RESULTS_DIR)/%/ours-lm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@# averaging because of gaussian noise
 	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
+			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
+			continue ; \
+		fi ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
 
@@ -179,6 +199,10 @@ $(RESULTS_DIR)/%/ours-sm-lm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 	@# averaging because of gaussian noise
 	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
+		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
+			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
+			continue ; \
+		fi ; \
 		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
 
