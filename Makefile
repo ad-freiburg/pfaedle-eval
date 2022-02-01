@@ -134,7 +134,7 @@ $(RESULTS_DIR)/%/gsts/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (G-STS) for $@..."
 
 	@# averaging because of gaussian noise
-	for i in 1 2 3 4 5 6 7 8 9 10; do \
+	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
 			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
