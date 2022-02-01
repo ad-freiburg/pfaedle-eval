@@ -293,15 +293,15 @@ $(PLOTS_DIR)/%/run-1 $(PLOTS_DIR)/%/run-2 $(PLOTS_DIR)/%/run-3 $(PLOTS_DIR)/%/ru
 $(PLOTS_DIR)/%-all.tsv: $(patsubst %, $(PLOTS_DIR)/%/$$*-avg.tsv, $(GROUND_TRUTH_DATASETS))
 	@# take the average of the input file columns
 	@cat $< | cut -f1,2 > tmp1
-	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]+\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
-	@paste -d ' ' tmp1 tmp2 > $@
+	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]*\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
+	@paste -d '\t' tmp1 tmp2 > $@
 
 $(PLOTS_DIR)/%-avg.tsv: $(PLOTS_DIR)/%/run-1-res.tsv  $(PLOTS_DIR)/%/run-2-res.tsv $(PLOTS_DIR)/%/run-3-res.tsv $(PLOTS_DIR)/%/run-4-res.tsv $(PLOTS_DIR)/%/run-5-res.tsv $(PLOTS_DIR)/%/run-6-res.tsv $(PLOTS_DIR)/%/run-7-res.tsv $(PLOTS_DIR)/%/run-8-res.tsv $(PLOTS_DIR)/%/run-9-res.tsv $(PLOTS_DIR)/%/run-10-res.tsv
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
 	@# take the average of the input file columns
 	@cat $< | cut -f1,2 > tmp1
-	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]+\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
-	@paste -d ' ' tmp1 tmp2 > $@
+	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]*\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
+	@paste -d '\t' tmp1 tmp2 > $@
 
 $(PLOTS_DIR)/%-res.tsv: $(PLOTS_DIR)/%
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
@@ -358,7 +358,7 @@ $(TABLES_DIR)/tbl-main-res-avg-frech.tex: script/table.py script/template.tex $(
 	@python3 script/table.py mainres-avg-frech $(patsubst %, $(RESULTS_DIR)/%, $(DATASETS)) > $@
 
 plots: $(PLOTS-OURS-RAW) $(PLOTS-OURS-SM) $(PLOTS-OURS-LM) $(PLOTS-OURS-SM-LM) $(PLOTS-DIST-DIFF) $(PLOTS-ALL)
-tables: $(TABLES_DIR)/tbl-overview.pdf $(TABLES_DIR)/tbl-time.pdf $(TABLES_DIR)/tbl-main-res.pdf $(TABLES_DIR)/tbl-main-res-avg-frech.tex
+tables: $(TABLES_DIR)/tbl-overview.pdf $(TABLES_DIR)/tbl-time.pdf $(TABLES_DIR)/tbl-main-res.pdf $(TABLES_DIR)/tbl-main-res-avg-frech.pdf
 
 check:
 	@echo "pfaedle version:" `$(PFAEDLE) --version`
