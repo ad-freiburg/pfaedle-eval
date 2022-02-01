@@ -98,7 +98,7 @@ if [ $_method == "emission-progr-ours-raw" ]; then
 					fi
 				fi
 				echo " +++ Testing mean=$i with noise standard dev $stddev +++"
-				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
+				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
 			done
 		done
 	done
@@ -122,7 +122,7 @@ if [ $_method == "emission-progr-ours-sm" ]; then
 					fi
 				fi
 				echo " +++ Testing mean=$i with noise standard dev $stddev +++"
-				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
+				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -o $out_dir
 			done
 		done
 	done
@@ -146,7 +146,7 @@ if [ $_method == "emission-progr-ours-sm-lm" ]; then
 					fi
 				fi
 				echo " +++ Testing mean=$i with noise standard dev $stddev +++"
-				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:9999" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -o $out_dir
+				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$lambda_em" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0" -o $out_dir
 			done
 		done
 	done
