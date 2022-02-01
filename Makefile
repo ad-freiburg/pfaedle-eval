@@ -54,58 +54,58 @@ PLOTS-ALL := $(PLOTS_DIR)/emission-progr-ours-raw-all.tex  $(PLOTS_DIR)/emission
 
 .SECONDEXPANSION:
 
-$(RESULTS_DIR)/%/trie-fasthops/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/trie-fasthops/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/trie-fasthops-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/trie-fasthops-star/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/trie-cached/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/trie-cached/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star --no-fast-hops -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/trie-cached-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/trie-cached-star/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/fasthops/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/fasthops/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-a-star --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/fasthops-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/fasthops-star/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/cached/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/cached/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-a-star --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/cached-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/cached-star/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/baseline/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/baseline/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-hop-cache --no-a-star --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/baseline-star/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/baseline-star/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running performance evaluation for $@..."
 	@$(PFAEDLE) -o $(dir $@)/gtfs --no-fast-hops --no-hop-cache --no-trie -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all -D --stats -d $(dir $@) $(GTFS_DIR)/ex/$*
 
-$(RESULTS_DIR)/%/dist-diff/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/dist-diff/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)/gtfs
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (DIST-DIFF) for $@..."
 
@@ -128,12 +128,12 @@ $(RESULTS_DIR)/%/dist-diff/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 
 	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
 
-$(RESULTS_DIR)/%/gsts/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/gsts/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)/gtfs
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (G-STS) for $@..."
 
 	@# averaging because of gaussian noise
-	for i in 1 2 3 4 5 6 7 8 9 10; do \
+	@for i in 1 2 3 4 5 6 7 8 9 10; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
 			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
@@ -144,7 +144,7 @@ $(RESULTS_DIR)/%/gsts/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 
 	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
 
-$(RESULTS_DIR)/%/ours-raw/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/ours-raw/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)/gtfs
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
 
@@ -160,7 +160,7 @@ $(RESULTS_DIR)/%/ours-raw/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 
 	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
 
-$(RESULTS_DIR)/%/ours-sm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/ours-sm/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)/gtfs
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-SM) for $@..."
 
@@ -176,7 +176,7 @@ $(RESULTS_DIR)/%/ours-sm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 
 	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
 
-$(RESULTS_DIR)/%/ours-lm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/ours-lm/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)/gtfs
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
 
@@ -192,7 +192,7 @@ $(RESULTS_DIR)/%/ours-lm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
 
 	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
 
-$(RESULTS_DIR)/%/ours-sm-lm/stats.json: $(GTFS_DIR)/ex/% $(OSM_DIR)/%.osm
+$(RESULTS_DIR)/%/ours-sm-lm/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@mkdir -p $(dir $@)/gtfs
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
 
@@ -234,15 +234,15 @@ $(OSM_DIR)/europe-latest.osm: $(OSM_DIR)/filterrules
 	@curl -sL $(OSM_URL) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
 	@osmfilter --parameter-file=$< $@.o5m -o=$@
 
-$(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm $(GTFS_DIR)/ex/sydney
+$(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm | $(GTFS_DIR)/ex/sydney
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for sydney"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/sydney -c $(CONFIG) -m all -X $@
 
-$(OSM_DIR)/seattle.osm: $(OSM_DIR)/washington-latest.osm $(GTFS_DIR)/ex/seattle
+$(OSM_DIR)/seattle.osm: $(OSM_DIR)/washington-latest.osm | $(GTFS_DIR)/ex/seattle
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for seattle"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/seattle -c $(CONFIG) -m all -X $@
 
-$(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm $(GTFS_DIR)/ex/%
+$(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm | $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/$* -c $(CONFIG) -m all -X $@
 
@@ -286,22 +286,22 @@ $(GTFS_DIR)/sydney.zip:
 	@exit 1
 
 ## plots
-$(PLOTS_DIR)/%/run-1 $(PLOTS_DIR)/%/run-2 $(PLOTS_DIR)/%/run-3 $(PLOTS_DIR)/%/run-4 $(PLOTS_DIR)/%/run-5 $(PLOTS_DIR)/%/run-6 $(PLOTS_DIR)/%/run-7 $(PLOTS_DIR)/%/run-8 $(PLOTS_DIR)/%/run-9 $(PLOTS_DIR)/%/run-10 : script/eval.sh $(GTFS_DIR)/ex/$$(subst /, ,$$(dir %)) $(OSM_DIR)/$$(subst /,,$$(dir %)).osm
+$(PLOTS_DIR)/%/run-1 $(PLOTS_DIR)/%/run-2 $(PLOTS_DIR)/%/run-3 $(PLOTS_DIR)/%/run-4 $(PLOTS_DIR)/%/run-5 $(PLOTS_DIR)/%/run-6 $(PLOTS_DIR)/%/run-7 $(PLOTS_DIR)/%/run-8 $(PLOTS_DIR)/%/run-9 $(PLOTS_DIR)/%/run-10 : script/eval.sh $(GTFS_DIR)/ex/$$(subst /, ,$$(dir %)) | $(OSM_DIR)/$$(subst /,,$$(dir %)).osm
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
 	@./script/eval.sh -m $(basename $(notdir $*)) -x $(OSM_DIR)/$(subst /,,$(dir $*)).osm -c $(CONFIG) --output $(PLOTS_DIR)/$* $(GTFS_DIR)/ex/$(dir $*)
 
 $(PLOTS_DIR)/%-all.tsv: $(patsubst %, $(PLOTS_DIR)/%/$$*-avg.tsv, $(GROUND_TRUTH_DATASETS))
 	@# take the average of the input file columns
 	@cat $< | cut -f1,2 > tmp1
-	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]+\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
-	@paste -d ' ' tmp1 tmp2 > $@
+	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]*\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
+	@paste -d '\t' tmp1 tmp2 > $@
 
 $(PLOTS_DIR)/%-avg.tsv: $(PLOTS_DIR)/%/run-1-res.tsv  $(PLOTS_DIR)/%/run-2-res.tsv $(PLOTS_DIR)/%/run-3-res.tsv $(PLOTS_DIR)/%/run-4-res.tsv $(PLOTS_DIR)/%/run-5-res.tsv $(PLOTS_DIR)/%/run-6-res.tsv $(PLOTS_DIR)/%/run-7-res.tsv $(PLOTS_DIR)/%/run-8-res.tsv $(PLOTS_DIR)/%/run-9-res.tsv $(PLOTS_DIR)/%/run-10-res.tsv
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
 	@# take the average of the input file columns
 	@cat $< | cut -f1,2 > tmp1
-	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]+\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
-	@paste -d ' ' tmp1 tmp2 > $@
+	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]*\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
+	@paste -d '\t' tmp1 tmp2 > $@
 
 $(PLOTS_DIR)/%-res.tsv: $(PLOTS_DIR)/%
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
@@ -358,7 +358,7 @@ $(TABLES_DIR)/tbl-main-res-avg-frech.tex: script/table.py script/template.tex $(
 	@python3 script/table.py mainres-avg-frech $(patsubst %, $(RESULTS_DIR)/%, $(DATASETS)) > $@
 
 plots: $(PLOTS-OURS-RAW) $(PLOTS-OURS-SM) $(PLOTS-OURS-LM) $(PLOTS-OURS-SM-LM) $(PLOTS-DIST-DIFF) $(PLOTS-ALL)
-tables: $(TABLES_DIR)/tbl-overview.pdf $(TABLES_DIR)/tbl-time.pdf $(TABLES_DIR)/tbl-main-res.pdf $(TABLES_DIR)/tbl-main-res-avg-frech.tex
+tables: $(TABLES_DIR)/tbl-overview.pdf $(TABLES_DIR)/tbl-time.pdf $(TABLES_DIR)/tbl-main-res.pdf $(TABLES_DIR)/tbl-main-res-avg-frech.pdf
 
 check:
 	@echo "pfaedle version:" `$(PFAEDLE) --version`
