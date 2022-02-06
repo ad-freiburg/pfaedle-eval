@@ -36,6 +36,7 @@ RUN mkdir -p /output
 COPY Makefile /
 COPY README.md /
 COPY eval.cfg /
+COPY eval_dist_diff.cfg /
 ADD script /script
 
 WORKDIR /

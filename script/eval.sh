@@ -18,12 +18,13 @@ _force=""
 _lambda_trans=0.0083
 
 # for debugging, display each command
-# set -x
+#set -x
 
 # check arguments
 _f=""
 _osm=""
 _c=""
+_dc=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -52,6 +53,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     -c|--config)
       _c="$2"
+      shift
+      shift
+      ;;
+    -d|--dist-diff-config)
+      _dc="$2"
       shift
       shift
       ;;
@@ -171,7 +177,7 @@ if [ $_method == "transition-progr-dist-diff" ]; then
 				fi
 				echo " +++ Testing mean=$i with noise standard dev $stddev +++"
 				# lambda=1/4.07=0.2457 from original microsoft paper
-				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_emission_method:norm" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0.2457" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:$lambda_t" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_method:distdiff" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:no" -o $out_dir
+				pfaedle -x $_osm -D $_f -c $_dc --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:$lambda_t" -o $out_dir
 			done
 		done
 	done
@@ -196,7 +202,7 @@ if [ $_method == "emission-progr-dist-diff" ]; then
 				fi
 				echo " +++ Testing stddev=$i with noise standard dev $stddev +++"
 				# lambda_t = 1/17.0387 = 0.0586901 from microsoft paper estimator, based on average median distdiff over testing datasets
-				pfaedle -x $_osm -D $_f -c $_c --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_emission_method:norm" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$stddevem" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:0.0586901" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_method:distdiff" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:no" -o $out_dir
+				pfaedle -x $_osm -D $_f -c $_dc --gaussian-noise $stddev -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:$stddevem" -o $out_dir
 			done
 		done
 	done

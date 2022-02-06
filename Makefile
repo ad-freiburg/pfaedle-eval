@@ -5,6 +5,7 @@
 PFAEDLE = pfaedle
 SHAPEVL = shapevl
 CONFIG = eval.cfg
+CONFIG_DIST_DIFF = eval_dist_diff.cfg
 
 RESULTS_DIR := results
 TABLES_DIR := tables
@@ -13,6 +14,7 @@ GTFS_DIR := gtfs
 OSM_DIR := osm
 
 NOISE = 30
+RUNS = 50
 
 DATASETS = vitoria-gasteiz zurich seattle wien paris switzerland germany #sydney
 GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich seattle wien #sydney  // takes too long to evaluate
@@ -117,13 +119,13 @@ $(RESULTS_DIR)/%/dist-diff/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@# 1.009 seattle
 	@# 7.77 wien
 	@# 12.551 sydney
-	@for i in 1 2 3 4 5 6 7 8 9 10; do \
+	@for i in `seq 1 $(RUNS)`; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
 			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
 			continue ; \
 		fi ; \
-		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG) -x $(OSM_DIR)/$*.osm -m all  --gaussian-noise $(NOISE) -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_emission_method:norm" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_move_penalty_fac:0.2457" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_method:distdiff" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_transition_penalty_fac:0.0586901" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_non_station_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_station_unmatched_penalty:0" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_platform_unmatched_penalty:0"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_to_unmatched_time_penalty_fac:1"  -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_line_station_from_unmatched_time_penalty_fac:1" -P"[tram, bus, coach, subway, rail, gondola, funicular, ferry]routing_use_stations:no" -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
+		$(PFAEDLE) -o $(dir $@)/gtfs/run-$$i -c $(CONFIG_DIST_DIFF) -x $(OSM_DIR)/$*.osm -m all --gaussian-noise $(NOISE) -D -d $(dir $@) $(GTFS_DIR)/ex/$* ; \
 	done
 
 	$(SHAPEVL) -g $< --json --avg $(dir $@)/gtfs/* > $@
@@ -133,7 +135,7 @@ $(RESULTS_DIR)/%/gsts/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (G-STS) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10; do \
+	@for i in `seq 1 $(RUNS)`; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
 			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
@@ -149,7 +151,7 @@ $(RESULTS_DIR)/%/ours-raw/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10; do \
+	@for i in `seq 1 $(RUNS)`; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
 			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
@@ -165,7 +167,7 @@ $(RESULTS_DIR)/%/ours-sm/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-SM) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10; do \
+	@for i in `seq 1 $(RUNS)`; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
 			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
@@ -181,7 +183,7 @@ $(RESULTS_DIR)/%/ours-lm/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10; do \
+	@for i in `seq 1 $(RUNS)`; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
 			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
@@ -197,7 +199,7 @@ $(RESULTS_DIR)/%/ours-sm-lm/stats.json: $(GTFS_DIR)/ex/% | $(OSM_DIR)/%.osm
 	@echo `date +"[%F %T.%3N]"` "EVAL : Running quality evaluation (OURS-RAW) for $@..."
 
 	@# averaging because of gaussian noise
-	@for i in 1 2 3 4 5 6 7 8 9 10; do \
+	@for i in `seq 1 $(RUNS)`; do \
 		echo `date +"[%F %T.%3N]"` "EVAL : Run # $$i" ; \
 		if test -f "$(dir $@)/gtfs/run-$$i/shapes.txt"; then \
 			echo `date +"[%F %T.%3N]"` "EVAL : (already present)" ; \
@@ -288,7 +290,7 @@ $(GTFS_DIR)/sydney.zip:
 ## plots
 $(PLOTS_DIR)/%/run-1 $(PLOTS_DIR)/%/run-2 $(PLOTS_DIR)/%/run-3 $(PLOTS_DIR)/%/run-4 $(PLOTS_DIR)/%/run-5 $(PLOTS_DIR)/%/run-6 $(PLOTS_DIR)/%/run-7 $(PLOTS_DIR)/%/run-8 $(PLOTS_DIR)/%/run-9 $(PLOTS_DIR)/%/run-10 : script/eval.sh $(GTFS_DIR)/ex/$$(subst /, ,$$(dir %)) | $(OSM_DIR)/$$(subst /,,$$(dir %)).osm
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
-	@./script/eval.sh -m $(basename $(notdir $*)) -x $(OSM_DIR)/$(subst /,,$(dir $*)).osm -c $(CONFIG) --output $(PLOTS_DIR)/$* $(GTFS_DIR)/ex/$(dir $*)
+	@./script/eval.sh -m $(basename $(notdir $*)) -x $(OSM_DIR)/$(subst /,,$(dir $*)).osm -c $(CONFIG) --dist-diff-config $(CONFIG_DIST_DIFF) --output $(PLOTS_DIR)/$* $(GTFS_DIR)/ex/$(dir $*)
 
 $(PLOTS_DIR)/%-all.tsv: $(patsubst %, $(PLOTS_DIR)/%/$$*-avg.tsv, $(GROUND_TRUTH_DATASETS))
 	@# take the average of the input file columns
