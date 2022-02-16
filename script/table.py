@@ -264,8 +264,6 @@ def tbl_main_res_time(results):
 
     sort = []
     for dataset_id in results:
-        if dataset_id not in {"baseline", "cached", "fasthops", "trie-cached", "trie-fasthops", "baseline-star", "cached-star", "fasthops-star", "trie-cached-star", "trie-fasthops-star"}:
-            continue
         sort.append(dataset_id)
 
     sort = sorted(
@@ -273,7 +271,7 @@ def tbl_main_res_time(results):
 
     for dataset_id in sort:
         r = results[dataset_id]
-        m = sorted([(get(r, m, "time_solve"), m) for m in r])
+        m = sorted([(get(r, m, "time_solve"), m) for m in r if m in {"baseline", "cached", "fasthops", "trie-cached", "trie-fasthops", "baseline-star", "cached-star", "fasthops-star", "trie-cached-star", "trie-fasthops-star"}])
         ret += "%s && %s & %s & %s & %s & %s & %s & %s & %s & %s & %s &\\\\\n" % (DATASET_LABELS_SHORT[dataset_id],
                             bold_if(format_msecs(get(r, "baseline", "time_solve")), m[0][1] == "baseline"),
                             bold_if(format_msecs(get(r, "cached", "time_solve")), m[0][1] == "cached"),
