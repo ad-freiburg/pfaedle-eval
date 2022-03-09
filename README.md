@@ -19,14 +19,14 @@ This is the evaluation workbench for [pfaedle](https://github.com/ad-freiburg/pf
 
 Build the container:
 
-  $ docker build -t pfaedle-eval .
+    $ docker build -t pfaedle-eval .
 
 Run the evaluation:
 
-  $ docker run pfaedle-eval <TARGET>
+    $ docker run pfaedle-eval <TARGET>
 
 where `<TARGET>` is the Makefile target,  either `tables` or `plots` (see above).
 
 Evaluation results will be output to `/output` inside the container. To retrieve them, mount `/output` to a local folder:
 
-  $ docker run -v /local/folder/:/output pfaedle-eval eval
+    $ docker run -v /local/folder/:/output pfaedle-eval eval
