@@ -1,6 +1,6 @@
 # pfaedle eval
 
-This is the evaluation workbench for pfaedle.
+This is the evaluation workbench for [pfaedle](https://github.com/ad-freiburg/pfaedle).
 
 ## Requirements
 
@@ -10,5 +10,23 @@ This is the evaluation workbench for pfaedle.
 
 ## How to use
 
- * `make tables`: generates PDF result tables
- * `make plots`: generate overview plots
+ * `make help`: Show help (this file)
+ * `make check`: generate overview plots.
+ * `make tables`: Generates PDF result tables
+ * `make plots`: Generate overview plots.
+
+## Run with Docker
+
+Build the container:
+
+  $ docker build -t pfaedle-eval .
+
+Run the evaluation:
+
+  $ docker run pfaedle-eval <TARGET>
+
+where `<TARGET>` is the Makefile target,  either `tables` or `plots` (see above).
+
+Evaluation results will be output to `/output` inside the container. To retrieve them, mount `/output` to a local folder:
+
+  $ docker run -v /local/folder/:/output pfaedle-eval eval

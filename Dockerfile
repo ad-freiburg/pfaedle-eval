@@ -1,8 +1,4 @@
 FROM ubuntu:20.04
-ARG GRB_VERSION=9.1.2
-ARG GRB_SHORT_VERSION=9.1
-
-WORKDIR /opt
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -27,7 +23,7 @@ RUN apt-get update \
 
 ENV PATH $PATH:/pfaedle/build
 
-ADD pfaedle /pfaedle
+RUN git clone --recurse-submodules https://github.com/ad-freiburg/pfaedle /pfaedle
 
 RUN cd /pfaedle && rm -rf build && mkdir build && cd build && cmake .. && make -j20 pfaedle && make -j20 shapevl
 
