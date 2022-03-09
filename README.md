@@ -29,4 +29,4 @@ where `<TARGET>` is the Makefile target,  either `tables` or `plots` (see above)
 
 Evaluation results will be output to `/output` inside the container. To retrieve them, mount `/output` to a local folder:
 
-    $ docker run -v /local/folder/:/output pfaedle-eval eval
+    $ docker run -v /local/folder/:/output pfaedle-eval <TARGET>
