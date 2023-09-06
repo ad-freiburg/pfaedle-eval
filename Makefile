@@ -22,6 +22,9 @@ GROUND_TRUTH_DATASETS = vitoria-gasteiz zurich seattle wien #sydney  // takes to
 OSM_URL = http://download.geofabrik.de/europe-latest.osm.pbf
 OSM_URL_AUSTRALIA = http://download.geofabrik.de/australia-oceania/australia-latest.osm.pbf
 OSM_URL_WASHINGTON = http://download.geofabrik.de/north-america/us/washington-latest.osm.pbf
+OSM_URL_PAISVASCO = http://download.geofabrik.de/europe/spain/pais-vasco-latest.osm.pbf
+OSM_URL_SWITZERLAND = http://download.geofabrik.de/europe/switzerland-latest.osm.pbf
+OSM_URL_AUSTRIA = http://download.geofabrik.de/europe/austria-latest.osm.pbf
 
 # time comp
 TRIE_FASTHOPS_STAR := $(patsubst %, $(RESULTS_DIR)/%/trie-fasthops-star/stats.json, $(DATASETS))
@@ -230,6 +233,24 @@ $(OSM_DIR)/washington-latest.osm: $(OSM_DIR)/filterrules
 	@curl -sL $(OSM_URL_WASHINGTON) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
 	@osmfilter --parameter-file=$< $@.o5m -o=$@
 
+$(OSM_DIR)/pais-vasco-latest.osm: $(OSM_DIR)/filterrules
+	@mkdir -p $(OSM_DIR)
+	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Pais Vasco..."
+	@curl -sL $(OSM_URL_PAISVASCO) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
+	@osmfilter --parameter-file=$< $@.o5m -o=$@
+
+$(OSM_DIR)/switzerland-latest.osm: $(OSM_DIR)/filterrules
+	@mkdir -p $(OSM_DIR)
+	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Switzerland..."
+	@curl -sL $(OSM_URL_SWITZERLAND) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
+	@osmfilter --parameter-file=$< $@.o5m -o=$@
+
+$(OSM_DIR)/austria-latest.osm: $(OSM_DIR)/filterrules
+	@mkdir -p $(OSM_DIR)
+	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Austria..."
+	@curl -sL $(OSM_URL_AUSTRIA) | osmconvert - --out-o5m --drop-version --drop-author > $@.o5m
+	@osmfilter --parameter-file=$< $@.o5m -o=$@
+
 $(OSM_DIR)/europe-latest.osm: $(OSM_DIR)/filterrules
 	@mkdir -p $(OSM_DIR)
 	@echo `date +"[%F %T.%3N]"` "EVAL : Downloading and converting OSM data for Europe..."
@@ -243,6 +264,18 @@ $(OSM_DIR)/sydney.osm: $(OSM_DIR)/australia-latest.osm | $(GTFS_DIR)/ex/sydney
 $(OSM_DIR)/seattle.osm: $(OSM_DIR)/washington-latest.osm | $(GTFS_DIR)/ex/seattle
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for seattle"
 	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/seattle -c $(CONFIG) -m all -X $@
+
+$(OSM_DIR)/vitoria-gasteiz.osm: $(OSM_DIR)/pais-vasco-latest.osm | $(GTFS_DIR)/ex/vitoria-gasteiz
+	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for vitoria-gasteiz"
+	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/vitoria-gasteiz -c $(CONFIG) -m all -X $@
+
+$(OSM_DIR)/zurich.osm: $(OSM_DIR)/switzerland-latest.osm | $(GTFS_DIR)/ex/zurich
+	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for zurich"
+	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/zurich -c $(CONFIG) -m all -X $@
+
+$(OSM_DIR)/wien.osm: $(OSM_DIR)/austria-latest.osm | $(GTFS_DIR)/ex/wien
+	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for wien"
+	@$(PFAEDLE) -x $< -i $(GTFS_DIR)/ex/wien -c $(CONFIG) -m all -X $@
 
 $(OSM_DIR)/%.osm: $(OSM_DIR)/europe-latest.osm | $(GTFS_DIR)/ex/%
 	@echo `date +"[%F %T.%3N]"` "EVAL : Filtering OSM data for $*"
@@ -294,16 +327,16 @@ $(PLOTS_DIR)/%/run-1 $(PLOTS_DIR)/%/run-2 $(PLOTS_DIR)/%/run-3 $(PLOTS_DIR)/%/ru
 
 $(PLOTS_DIR)/%-all.tsv: $(patsubst %, $(PLOTS_DIR)/%/$$*-avg.tsv, $(GROUND_TRUTH_DATASETS))
 	@# take the average of the input file columns
-	@cat $< | cut -f1,2 > tmp1
-	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]*\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
-	@paste -d '\t' tmp1 tmp2 > $@
+	@cat $< | cut -f1,2 > tmp1-$*-all
+	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]*\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2-$*-all
+	@paste -d '\t' tmp1-$*-all tmp2-$*-all > $@
 
 $(PLOTS_DIR)/%-avg.tsv: $(PLOTS_DIR)/%/run-1-res.tsv  $(PLOTS_DIR)/%/run-2-res.tsv $(PLOTS_DIR)/%/run-3-res.tsv $(PLOTS_DIR)/%/run-4-res.tsv $(PLOTS_DIR)/%/run-5-res.tsv $(PLOTS_DIR)/%/run-6-res.tsv $(PLOTS_DIR)/%/run-7-res.tsv $(PLOTS_DIR)/%/run-8-res.tsv $(PLOTS_DIR)/%/run-9-res.tsv $(PLOTS_DIR)/%/run-10-res.tsv
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
 	@# take the average of the input file columns
-	@cat $< | cut -f1,2 > tmp1
-	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]*\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2
-	@paste -d '\t' tmp1 tmp2 > $@
+	@cat $< | cut -f1,2 > tmp1-$*-avg
+	@paste -d ' ' $^ | tr '\t' ' ' | sed -r 's/[0-9]+ [0-9]+ ([0-9]*\.?[0-9]*)/\1/g;s/ /+/g;s/.*/scale=4;(&)\/$(words $^)/g' | bc > tmp2-$*-avg
+	@paste -d '\t' tmp1-$*-avg tmp2-$*-avg > $@
 
 $(PLOTS_DIR)/%-res.tsv: $(PLOTS_DIR)/%
 	@printf "[%s] Generating $@ ...\n" "$$(date -Is)"
@@ -337,11 +370,11 @@ $(PLOTS_DIR)/%.tex: $(PLOTS_DIR)/%.tsv script/plot3d.p
 ## tables
 $(TABLES_DIR)/%.pdf: $(TABLES_DIR)/%.tex
 	@printf "[%s] Generating $@ ... \n" "$$(date -Is)"
-	@cat script/template.tex > $(TABLES_DIR)/tmp
-	@cat $^ >> $(TABLES_DIR)/tmp
-	@echo "\\\end{document}" >> $(TABLES_DIR)/tmp
-	@pdflatex -output-directory=$(TABLES_DIR) -jobname=$* $(TABLES_DIR)/tmp > /dev/null
-	@rm $(TABLES_DIR)/tmp
+	@cat script/template.tex > $(TABLES_DIR)/tmp-$*
+	@cat $^ >> $(TABLES_DIR)/tmp-$*
+	@echo "\\\end{document}" >> $(TABLES_DIR)/tmp-$*
+	@pdflatex -output-directory=$(TABLES_DIR) -jobname=$* $(TABLES_DIR)/tmp-$* > /dev/null
+	@rm $(TABLES_DIR)/tmp-$*
 
 $(TABLES_DIR)/tbl-overview.tex: script/table.py script/template.tex $(TRIE_FASTHOPS_STAR)
 	@mkdir -p $(TABLES_DIR)

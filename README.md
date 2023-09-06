@@ -15,6 +15,8 @@ This is the evaluation workbench for [pfaedle](https://github.com/ad-freiburg/pf
  * `make tables`: Generates PDF result tables
  * `make plots`: Generate overview plots.
 
+Note: by default, a Gaussian noise with a standard deviation of 30 meters is added. To change this, set the variable `NOISE`. The number of runs the stats are averaged from can be set with the variable `RUNS`, the default is 50.
+
 ## Run with Docker
 
 Build the container:
